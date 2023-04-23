@@ -1,5 +1,18 @@
 {
+  "name": "p_inv_campana_libertadora",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Grupo-Investigacion-Bimadino/p_inv_campana_libertadora.git",
+  "author": "Grupo-Investigacion-Bimadino",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22",
     "phaser": "^3.55.2"
   }
 }
