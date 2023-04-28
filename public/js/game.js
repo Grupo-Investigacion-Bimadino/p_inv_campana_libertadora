@@ -1,13 +1,16 @@
 import { Preguntas } from "./preguntas.js";
 
-export class Mapa extends Phaser.Scene {
+export class Game extends Phaser.Scene {
   constructor() {
-    super({ key: "Mapa" });
+    super({ key: "Game" });
+    this.velocity = 200;
   }
 
   preload() {
-    this.load.tilemapCSV("map", "../data/mapa.csv");
-    this.load.image("tiles", "../img/imagen.png");
+    this.load.tilemapCSV("map", "./data/mapa.csv");
+    this.load.image("tiles", "./img/imagen.png");
+    this.load.image("personaje", "./img/Personaje.png");
+    console.log("Si");
   }
   create() {
     var map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
@@ -129,5 +132,44 @@ export class Mapa extends Phaser.Scene {
       fill: "#FFF",
       fontFamily: "Comic Sans",
     });
+
+
+    //Personaje
+    this.personaje = this.add
+      .sprite(200, 200, "personaje")
+      .setScale(0.3, 0.3)
+      .setInteractive();
+    //Personaje
   }
+
+  update(time, delta) {
+    //MOVIMIENTO DEL PERSONAJE.
+    let dx = 0,
+      dy = 0;
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isDown) {
+      dx -= 1;
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isDown) {
+      dx += 1;
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isDown) {
+      dy -= 1;
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isDown) {
+      dy += 1;
+    }
+
+    if (dx !== 0 || dy !== 0) {
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const normalizedX = dx / distance;
+      const normalizedY = dy / distance;
+      this.personaje.x += (normalizedX * this.velocity * delta) / 1000;
+      this.personaje.y += (normalizedY * this.velocity * delta) / 1000;
+      const angle = Phaser.Math.Angle.Between(0, 0, normalizedX, normalizedY);
+      this.personaje.angle = (angle * 180) / Math.PI;
+    }
+  }
+
 }
+
+
