@@ -10,12 +10,13 @@ export class Game extends Phaser.Scene {
     this.load.tilemapCSV("map", "./data/mapa.csv");
     this.load.image("tiles", "./img/imagen.png");
     this.load.image("personaje", "./img/Personaje.png");
-    console.log("Si");
+    this.load.image('enemigo', './img/Personaje.png');
   }
   create() {
     var map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
     var tiles = map.addTilesetImage("tiles", null, 32, 32, 0, 0);
     var layer = map.createLayer(0, tiles);
+    this.cameras.main.setBounds(0, 0, 3200, 3200);
 
     const preguntas = Preguntas();
 
@@ -140,9 +141,16 @@ export class Game extends Phaser.Scene {
       .setScale(0.3, 0.3)
       .setInteractive();
     //Personaje
+    //Enemigo
+    this.enemigo = this.add
+      .sprite(600, 300, "enemigo")
+      .setScale(0.3, 0.3)
+      .setInteractive();
+    //Enemigo
   }
 
   update(time, delta) {
+
     //MOVIMIENTO DEL PERSONAJE.
     let dx = 0,
       dy = 0;
@@ -168,6 +176,44 @@ export class Game extends Phaser.Scene {
       const angle = Phaser.Math.Angle.Between(0, 0, normalizedX, normalizedY);
       this.personaje.angle = (angle * 180) / Math.PI;
     }
+
+    // Define la distancia mínima para considerar que los objetos están lo suficientemente cerca
+    const MIN_DISTANCE = 300;
+
+    // Calcula la distancia entre los centros de los dos objetos
+    const distance = Phaser.Math.Distance.Between(this.enemigo.x, this.enemigo.y, this.personaje.x, this.personaje.y);
+
+    // Compara la distancia con la distancia mínima
+    if (distance < MIN_DISTANCE && distance > 80) {
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const normalizedX = dx / distance;
+      const normalizedY = dy / distance;
+      console.log("ATACAR");
+      if (this.personaje.x < this.enemigo.x) { this.enemigo.x -= (100 * delta) / 1000; }
+      else { this.enemigo.x += (70 * delta) / 1000; }
+      if (this.personaje.y < this.enemigo.y) { this.enemigo.y -= (100 * delta) / 1000; }
+      else { this.enemigo.y += (70 * delta) / 1000; }
+
+      // Obtén el ángulo entre los dos objetos
+      var angle = Phaser.Math.Angle.Between(this.enemigo.x, this.enemigo.y, this.personaje.x, this.personaje.y);
+
+      // Establece la rotación de 'objeto1' para que mire en esa dirección
+      this.enemigo.rotation = angle;
+    }
+
+    //MOVIMIENTO DE LA CÁMARA
+    this.cameras.main.scrollX += dx * this.velocity * delta / 1000;
+    this.cameras.main.scrollY += dy * this.velocity * delta / 1000;
+
+    //SETEO EL OBJETO QUE DEBE SEGUIR LA CÁMARA
+    this.cameras.main.startFollow(this.personaje);
+
+    //Definir los límites del mapa
+    var limiteXMaximo = 1000;
+    var limiteXMinimo = 0;
+    var limiteYMaximo = 500;
+    var limiteYMinimo = 0;
+
   }
 
 }
