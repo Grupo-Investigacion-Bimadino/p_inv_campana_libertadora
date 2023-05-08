@@ -147,10 +147,17 @@ export class Game extends Phaser.Scene {
       .setScale(0.3, 0.3)
       .setInteractive();
     //Enemigo
+
+    let enemigos = this.physics.add.group();
+
+    for (let i = 0; i < 5; i++) {
+      let enemigo = this.physics.add.sprite(Phaser.Math.Between(100, 700), Phaser.Math.Between(100, 500), 'enemigo') .setScale(0.3, 0.3);
+      enemigos.add(enemigo);
+    }
+        
   }
 
   update(time, delta) {
-
     //MOVIMIENTO DEL PERSONAJE.
     let dx = 0,
       dy = 0;
@@ -167,19 +174,19 @@ export class Game extends Phaser.Scene {
       dy += 1;
     }
 
-    if (dx !== 0 || dy !== 0) {
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const normalizedX = dx / distance;
-      const normalizedY = dy / distance;
-      this.personaje.x += (normalizedX * this.velocity * delta) / 1000;
-      this.personaje.y += (normalizedY * this.velocity * delta) / 1000;
-      const angle = Phaser.Math.Angle.Between(0, 0, normalizedX, normalizedY);
-      this.personaje.angle = (angle * 180) / Math.PI;
-    }
+    // Obtener la posición del cursor en relación a la cámara
+    const cursorPosition = this.input.activePointer.positionToCamera(this.cameras.main);
 
-    // Define la distancia mínima para considerar que los objetos están lo suficientemente cerca
+    // Obtener el ángulo entre el personaje y el cursor
+    const Angle = Phaser.Math.Angle.Between(this.personaje.x, this.personaje.y, cursorPosition.x, cursorPosition.y);
+
+    // Establecer la rotación del personaje al ángulo calculado
+    this.personaje.rotation = Angle;
+
+
+        // Define la distancia mínima para considerar que los objetos están lo suficientemente cerca
     const MIN_DISTANCE = 300;
-
+    
     // Calcula la distancia entre los centros de los dos objetos
     const distance = Phaser.Math.Distance.Between(this.enemigo.x, this.enemigo.y, this.personaje.x, this.personaje.y);
 
@@ -188,7 +195,6 @@ export class Game extends Phaser.Scene {
       const distance = Math.sqrt(dx * dx + dy * dy);
       const normalizedX = dx / distance;
       const normalizedY = dy / distance;
-      console.log("ATACAR");
       if (this.personaje.x < this.enemigo.x) { this.enemigo.x -= (100 * delta) / 1000; }
       else { this.enemigo.x += (70 * delta) / 1000; }
       if (this.personaje.y < this.enemigo.y) { this.enemigo.y -= (100 * delta) / 1000; }
@@ -199,6 +205,16 @@ export class Game extends Phaser.Scene {
 
       // Establece la rotación de 'objeto1' para que mire en esa dirección
       this.enemigo.rotation = angle;
+    }
+
+
+
+    if (dx !== 0 || dy !== 0) {
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const normalizedX = dx / distance;
+      const normalizedY = dy / distance;
+      this.personaje.x += (normalizedX * this.velocity * delta) / 1000;
+      this.personaje.y += (normalizedY * this.velocity * delta) / 1000;
     }
 
     //MOVIMIENTO DE LA CÁMARA
