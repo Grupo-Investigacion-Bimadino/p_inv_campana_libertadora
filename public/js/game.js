@@ -4,6 +4,17 @@ export class Game extends Phaser.Scene {
   constructor() {
     super({ key: "Game" });
     this.velocity = 200;
+    this.wrapRect;
+    this.aliens = [];
+    this.puntos = {
+      1: { x: 900, y: 300 },
+      2: { x: 300, y: 400 },
+      3: { x: 500, y: 800 },
+      4: { x: 900, y: 610 },
+      5: { x: 1500, y: 1700 },
+      6: { x: 1300, y: 1300 },
+      7: { x: 427.5, y: 1245}
+    };
   }
 
   preload() {
@@ -11,14 +22,34 @@ export class Game extends Phaser.Scene {
     this.load.image("tiles", "./img/imagen.png");
     this.load.image("personaje", "./img/Personaje.png");
     this.load.image('enemigo', './img/Personaje.png');
+    this.load.audio('Audio_Fon', ['./assets/Audios/Fondo_Sound.wav']);
+    this.load.audio('Pasos', ['./assets/Audios/Pasos.mp3']);
   }
   create() {
+    this.fondo = this.sound.add('Audio_Fon');
+    this.PasosD = this.sound.add('Pasos');
+    this.PasosZ = this.sound.add('Pasos');
+    this.PasosAr = this.sound.add('Pasos');
+    this.PasosAb = this.sound.add('Pasos');
+
+    this.mainCamera = this.cameras.main;
+    this.mainCamera.setBounds(0, 0, 0, 0);
+    this.mainCamera.setFollowOffset(0, 0);
+
+    this.fondo.play();
     var map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
     var tiles = map.addTilesetImage("tiles", null, 32, 32, 0, 0);
     var layer = map.createLayer(0, tiles);
     this.cameras.main.setBounds(0, 0, 3200, 3200);
 
     const preguntas = Preguntas();
+
+    this.wrapRect = new Phaser.Geom.Rectangle(0, 0, 1367, 1239);
+    for (let i = 1; i <= 7; i++)
+    {
+        this.aliens.push(this.add.image(this.puntos[i].x, this.puntos[i].y, 'enemigo').setScale(0.3,0.3));
+      }
+    
 
     const div = document.getElementById("con_preguntas");
     const divOs = document.getElementById("oscuro");
@@ -136,43 +167,46 @@ export class Game extends Phaser.Scene {
 
 
     //Personaje
-    this.personaje = this.add
+    this.personaje = this.physics.add
       .sprite(200, 200, "personaje")
       .setScale(0.3, 0.3)
       .setInteractive();
     //Personaje
-    //Enemigo
-    this.enemigo = this.add
-      .sprite(600, 300, "enemigo")
-      .setScale(0.3, 0.3)
-      .setInteractive();
-    //Enemigo
 
-    let enemigos = this.physics.add.group();
-
-    for (let i = 0; i < 5; i++) {
-      let enemigo = this.physics.add.sprite(Phaser.Math.Between(100, 700), Phaser.Math.Between(100, 500), 'enemigo') .setScale(0.3, 0.3);
-      enemigos.add(enemigo);
-    }
-        
   }
 
   update(time, delta) {
     //MOVIMIENTO DEL PERSONAJE.
-    let dx = 0,
-      dy = 0;
+
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isUp) {
+      this.personaje.setVelocityY(0);
+      this.PasosAb.play();
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isUp) {
+      this.personaje.setVelocityX(0);
+      this.PasosD.play();
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isUp) {
+      this.personaje.setVelocityX(0);
+      this.PasosZ.play();
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isUp) {
+      this.personaje.setVelocityY(0);
+      this.PasosAr.play();
+    }
     if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isDown) {
-      dx -= 1;
+      this.personaje.setVelocityX(-150);
     }
     if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isDown) {
-      dx += 1;
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isDown) {
-      dy -= 1;
+      this.personaje.setVelocityX(150);
     }
     if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isDown) {
-      dy += 1;
+      this.personaje.setVelocityY(150);
     }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isDown) {
+      this.personaje.setVelocityY(-150);
+    }
+
 
     // Obtener la posición del cursor en relación a la cámara
     const cursorPosition = this.input.activePointer.positionToCamera(this.cameras.main);
@@ -183,52 +217,10 @@ export class Game extends Phaser.Scene {
     // Establecer la rotación del personaje al ángulo calculado
     this.personaje.rotation = Angle;
 
-
-        // Define la distancia mínima para considerar que los objetos están lo suficientemente cerca
-    const MIN_DISTANCE = 300;
-    
-    // Calcula la distancia entre los centros de los dos objetos
-    const distance = Phaser.Math.Distance.Between(this.enemigo.x, this.enemigo.y, this.personaje.x, this.personaje.y);
-
-    // Compara la distancia con la distancia mínima
-    if (distance < MIN_DISTANCE && distance > 80) {
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const normalizedX = dx / distance;
-      const normalizedY = dy / distance;
-      if (this.personaje.x < this.enemigo.x) { this.enemigo.x -= (100 * delta) / 1000; }
-      else { this.enemigo.x += (70 * delta) / 1000; }
-      if (this.personaje.y < this.enemigo.y) { this.enemigo.y -= (100 * delta) / 1000; }
-      else { this.enemigo.y += (70 * delta) / 1000; }
-
-      // Obtén el ángulo entre los dos objetos
-      var angle = Phaser.Math.Angle.Between(this.enemigo.x, this.enemigo.y, this.personaje.x, this.personaje.y);
-
-      // Establece la rotación de 'objeto1' para que mire en esa dirección
-      this.enemigo.rotation = angle;
-    }
+    // Establece la rotación de 'objeto1' para que mire en esa dirección
+    this.mainCamera.startFollow(this.personaje);
 
 
-
-    if (dx !== 0 || dy !== 0) {
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const normalizedX = dx / distance;
-      const normalizedY = dy / distance;
-      this.personaje.x += (normalizedX * this.velocity * delta) / 1000;
-      this.personaje.y += (normalizedY * this.velocity * delta) / 1000;
-    }
-
-    //MOVIMIENTO DE LA CÁMARA
-    this.cameras.main.scrollX += dx * this.velocity * delta / 1000;
-    this.cameras.main.scrollY += dy * this.velocity * delta / 1000;
-
-    //SETEO EL OBJETO QUE DEBE SEGUIR LA CÁMARA
-    this.cameras.main.startFollow(this.personaje);
-
-    //Definir los límites del mapa
-    var limiteXMaximo = 1000;
-    var limiteXMinimo = 0;
-    var limiteYMaximo = 500;
-    var limiteYMinimo = 0;
 
   }
 

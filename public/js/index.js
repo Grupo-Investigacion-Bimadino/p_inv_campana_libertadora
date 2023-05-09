@@ -1,6 +1,6 @@
 import { Game } from "./game.js";
 
-const config = {
+var config = {
   type: Phaser.AUTO,
   width: 1345,
   height: 604,
@@ -13,4 +13,5 @@ const config = {
   }
 };
 
-const game = new Phaser.Game(config);
+  var game = new Phaser.Game(config);
+
