@@ -1,36 +1,48 @@
 import { Preguntas } from "./preguntas.js";
 
 export class Game extends Phaser.Scene {
+  Ultimo;
+  Reproducir;
+
   constructor() {
     super({ key: "Game" });
     this.velocity = 200;
     this.wrapRect;
     this.aliens = [];
     this.puntos = {
-      1: { x: 900, y: 300 },
-      2: { x: 300, y: 400 },
-      3: { x: 500, y: 800 },
-      4: { x: 900, y: 610 },
-      5: { x: 1500, y: 1700 },
-      6: { x: 1300, y: 1300 },
-      7: { x: 427.5, y: 1245}
+      1: { n: 1, x: 900, y: 300, nivel: 1, tipo: "enemigo" },
+      2: { n: 2, x: 300, y: 400, nivel: 2, tipo: "enemigo" },
+      3: { n: 3, x: 500, y: 800, nivel: 3, tipo: "enemigo" },
+      4: { n: 4, x: 900, y: 610, nivel: 4, tipo: "enemigo" },
+      5: { n: 5, x: 1500, y: 1700, nivel: 5, tipo: "enemigo" },
+      6: { n: 6, x: 1300, y: 1300, nivel: 6, tipo: "enemigo" },
+      7: { n: 7, x: 427.5, y: 1245, nivel: 7, tipo: "enemigo" }
     };
+    this.Ultimo = 1;
+    this.Reproducir = 1;
+    this.esc = 1;    
   }
 
   preload() {
     this.load.tilemapCSV("map", "./data/mapa.csv");
     this.load.image("tiles", "./img/imagen.png");
     this.load.image("personaje", "./img/Personaje.png");
-    this.load.image('enemigo', './img/Personaje.png');
+    this.load.image('enemigo', './img/enemigo.png');
     this.load.audio('Audio_Fon', ['./assets/Audios/Fondo_Sound.wav']);
     this.load.audio('Pasos', ['./assets/Audios/Pasos.mp3']);
+    this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
   }
-  create() {
+  create() {    
+    this.sound.stopAll();
     this.fondo = this.sound.add('Audio_Fon');
     this.PasosD = this.sound.add('Pasos');
     this.PasosZ = this.sound.add('Pasos');
     this.PasosAr = this.sound.add('Pasos');
     this.PasosAb = this.sound.add('Pasos');
+    this.Afondo = this.sound.add('Audio_Bat');
+
+
+    var puntaje = 10;
 
     this.mainCamera = this.cameras.main;
     this.mainCamera.setBounds(0, 0, 0, 0);
@@ -45,11 +57,17 @@ export class Game extends Phaser.Scene {
     const preguntas = Preguntas();
 
     this.wrapRect = new Phaser.Geom.Rectangle(0, 0, 1367, 1239);
-    for (let i = 1; i <= 7; i++)
-    {
-        this.aliens.push(this.add.image(this.puntos[i].x, this.puntos[i].y, 'enemigo').setScale(0.3,0.3));
-      }
-    
+
+    this.enemigos = this.physics.add.staticGroup();
+
+    for (let i = 1; i <= 7; i++) {
+
+      var enemigo = this.enemigos.create(this.puntos[i].x, this.puntos[i].y, this.puntos[i].tipo,
+      ).setScale(0.3, 0.3).setSize(70, 70).setOffset(108, 110);
+    }
+
+
+
 
     const div = document.getElementById("con_preguntas");
     const divOs = document.getElementById("oscuro");
@@ -122,10 +140,9 @@ export class Game extends Phaser.Scene {
 
         if (respuestaSeleccionada === respuestaCorrecta) {
           console.log("Respuesta correcta!");
-          // Incrementa el puntaje en 10
-          puntaje += 10;
-          // Actualiza el texto del objeto de texto
-          puntajeTexto.setText(`Experiencia: ${puntaje}`);
+          puntaje += 5;
+          document.getElementById('Puntajee').innerHTML = 'PUNTOS: ' + puntaje;
+          console.log("puntos=  " + puntaje);
         } else {
           console.log("Respuesta incorrecta.");
         }
@@ -149,33 +166,63 @@ export class Game extends Phaser.Scene {
       preguntar();
     };
 
-    button.addEventListener("click", function () {
-      if (divOs.style.display === "block") {
-        divOs.style.display = "none";
-      } else {
-        divOs.style.display = "block";
-        Probar();
-      }
-    });
-
-    let puntaje = 0;
-    let puntajeTexto = this.add.text(10, 10, `Experiencia: ${puntaje}`, {
-      fontSize: "24px",
-      fill: "#FFF",
-      fontFamily: "Comic Sans",
-    });
-
+    Probar();
 
     //Personaje
     this.personaje = this.physics.add
       .sprite(200, 200, "personaje")
       .setScale(0.3, 0.3)
-      .setInteractive();
+      .setBounce(0.2)
     //Personaje
+
+    document.getElementById('Puntajee').innerHTML = 'PUNTOS: ' + puntaje;
 
   }
 
-  update(time, delta) {
+  update(time, dt) {
+
+    // Guardar el estado del juego actualizado
+    localStorage.setItem('gameState', JSON.stringify(this.gameState));
+
+    this.physics.add.collider(this.personaje, this.enemigos, mostrarVentanaModal);
+
+    function mostrarVentanaModal() {
+      document.getElementById("oscuro").style.display = "block";
+    }
+
+    if (this.Ultimo === 2) {
+      if (this.Reproducir === 1) {
+        this.Afondo.play();
+        this.Afondo.setVolume(0.3);
+        this.Afondo.setSeek(1, 5);
+        this.Reproducir = 2;
+      }
+      this.fondo.stop();
+    }
+
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).isDown) {
+      if (this.Ultimo === 1) {
+        // this.scene.start('MenuScene');
+        // this.scene.pause('Game');
+        this.scene.start('MenuScene');
+      }
+      else {
+        document.getElementById("oscuro").style.display = "none";
+        this.Afondo.stop();
+      }
+    }
+
+    if (document.getElementById("oscuro").style.display === "block") {
+      this.Ultimo = 2;
+      this.fondo.stop();
+      this.PasosAb.stop();
+      this.PasosAr.stop();
+      this.PasosD.stop();
+      this.PasosZ.stop();
+    }
+    if (document.getElementById("oscuro").style.display === "none") {
+      this.Ultimo = 1;
+    }
     //MOVIMIENTO DEL PERSONAJE.
 
     if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isUp) {
@@ -194,19 +241,18 @@ export class Game extends Phaser.Scene {
       this.personaje.setVelocityY(0);
       this.PasosAr.play();
     }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isDown) {
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isDown && this.Ultimo === 1) {
       this.personaje.setVelocityX(-150);
     }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isDown) {
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isDown && this.Ultimo === 1) {
       this.personaje.setVelocityX(150);
     }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isDown) {
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isDown && this.Ultimo === 1) {
       this.personaje.setVelocityY(150);
     }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isDown) {
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isDown && this.Ultimo === 1) {
       this.personaje.setVelocityY(-150);
     }
-
 
     // Obtener la posición del cursor en relación a la cámara
     const cursorPosition = this.input.activePointer.positionToCamera(this.cameras.main);
@@ -219,8 +265,6 @@ export class Game extends Phaser.Scene {
 
     // Establece la rotación de 'objeto1' para que mire en esa dirección
     this.mainCamera.startFollow(this.personaje);
-
-
 
   }
 

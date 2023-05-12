@@ -1,17 +1,20 @@
 import { Game } from "./game.js";
+import { MenuScene } from "./menu.js";
 
 var config = {
   type: Phaser.AUTO,
   width: 1345,
   height: 604,
-  scene: [Game],
+  scene: [MenuScene, Game],
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 0 }
+      gravity: { y: 0 },
+      debug: false
     }
   }
 };
 
   var game = new Phaser.Game(config);
+  
 

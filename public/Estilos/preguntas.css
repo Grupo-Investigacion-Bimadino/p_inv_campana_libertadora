@@ -1,23 +1,26 @@
 #con_preguntas {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 85%;
     transform: translate(-50%, -50%);
     background-image: url(../assets/Pre_Fondo.png);
-    background-size: 100%;
+    background-size: 270%;
     background-position: center;
     background-repeat: no-repeat;
     padding-left: 5%;
     padding-right: 4%;
     justify-content: center;
     align-items: center;
-    width: 50%;
-    height: 78%;
+    width: 20%;
+    height: 100%;
 }
 
 #oscuro{
     position: absolute;
-    background-color: #0202025f;
+    background-color: #9f6110;
+    background-image: url(../img/Batalla.jpeg);
+    background-repeat: no-repeat;
+    background-size: 1100px;
     width: 99%;
     height: 96.8%;
     display: none;
@@ -29,28 +32,28 @@
 
 .Op_res{
     background-image: url(../assets/Res_Fondo.png);
-    background-size: cover;
     background-position: center;
-    padding-top: 4%;
-    padding-left: 10%;
-    height: 50px;
-    width: 90%;
-    font-size: 20px;
+    padding-top: 15%;
+    margin-top: -10%;
+    height: 60px;
+    width: 100%;
+    font-size: 100%;
+    text-align: center;
     color:#503D00;
-    display: block;
+    display: inline-block;
     cursor: pointer; 
 }
 
 .Op_pre{
     font-size: 30px;
     color:#503D00;
-    display: block;
+    display: inline-block;
     margin-bottom: 2%;
-    width: 90%;
+    width: 110%;
     height: 20%;
-    margin-left: 5%;
     text-align: center;
-    margin-top: 2%;
+    margin-top: 20%;
+    margin-bottom: 20%;
     text-shadow: 1px 1px 2px #000;
 }
 
@@ -65,4 +68,16 @@
     text-align: center;
     font-size: 16px;
     cursor: pointer;
+}
+
+#Puntajee{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    padding-left: 10px;
+    width: 100px;
+    height: 20px;
+    background-color: #343609;
+    position: fixed;
+    left: 1%;
+    top: 2%;
+    color: rgb(255, 255, 255);
 }
