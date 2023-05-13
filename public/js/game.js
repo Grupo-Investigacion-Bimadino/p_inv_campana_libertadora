@@ -31,7 +31,9 @@ export class Game extends Phaser.Scene {
     this.load.audio('Audio_Fon', ['./assets/Audios/Fondo_Sound.wav']);
     this.load.audio('Pasos', ['./assets/Audios/Pasos.mp3']);
     this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
-  }
+    this.load.audio('Son_Bton_Bat', ['./assets/Audios/Son_Boton_Bat.mp3']);
+
+    }
   create() {    
     this.sound.stopAll();
     this.fondo = this.sound.add('Audio_Fon');
@@ -40,6 +42,7 @@ export class Game extends Phaser.Scene {
     this.PasosAr = this.sound.add('Pasos');
     this.PasosAb = this.sound.add('Pasos');
     this.Afondo = this.sound.add('Audio_Bat');
+    this.Batalla = this.sound.add('Son_Bton_Bat');
 
 
     var puntaje = 10;
@@ -49,6 +52,7 @@ export class Game extends Phaser.Scene {
     this.mainCamera.setFollowOffset(0, 0);
 
     this.fondo.play();
+
     var map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
     var tiles = map.addTilesetImage("tiles", null, 32, 32, 0, 0);
     var layer = map.createLayer(0, tiles);
@@ -136,6 +140,7 @@ export class Game extends Phaser.Scene {
       }
 
       function validarRespuesta() {
+
         var respuestaCorrecta = preguntas[preguntaActual].correcta;
 
         if (respuestaSeleccionada === respuestaCorrecta) {
@@ -167,12 +172,20 @@ export class Game extends Phaser.Scene {
     };
 
     Probar();
-
+    /// debugger;
     //Personaje
+    let datosPersonaje={}; 
+    if (!localStorage.getItem("personaje")) {
+      localStorage.setItem("personaje", JSON.stringify({posX:200, posY:200}));
+    }
+    console.log(typeof JSON.parse(localStorage.getItem("personaje")).posX)
     this.personaje = this.physics.add
-      .sprite(200, 200, "personaje")
-      .setScale(0.3, 0.3)
-      .setBounce(0.2)
+    .sprite(JSON.parse(localStorage.getItem("personaje")).posX, JSON.parse(localStorage.getItem("personaje")).posY, "personaje")
+    .setScale(0.3, 0.3)
+    .setBounce(0.2)
+    
+
+    
     //Personaje
 
     document.getElementById('Puntajee').innerHTML = 'PUNTOS: ' + puntaje;
@@ -181,8 +194,8 @@ export class Game extends Phaser.Scene {
 
   update(time, dt) {
 
+    let {posX, posY} = localStorage.getItem("personaje")
     // Guardar el estado del juego actualizado
-    localStorage.setItem('gameState', JSON.stringify(this.gameState));
 
     this.physics.add.collider(this.personaje, this.enemigos, mostrarVentanaModal);
 
@@ -202,8 +215,7 @@ export class Game extends Phaser.Scene {
 
     if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).isDown) {
       if (this.Ultimo === 1) {
-        // this.scene.start('MenuScene');
-        // this.scene.pause('Game');
+        localStorage.setItem("personaje", JSON.stringify({posX:this.personaje.x, posY:this.personaje.y}));
         this.scene.start('MenuScene');
       }
       else {
@@ -224,6 +236,7 @@ export class Game extends Phaser.Scene {
       this.Ultimo = 1;
     }
     //MOVIMIENTO DEL PERSONAJE.
+   
 
     if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isUp) {
       this.personaje.setVelocityY(0);
