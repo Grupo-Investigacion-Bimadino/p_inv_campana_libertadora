@@ -178,7 +178,6 @@ export class Game extends Phaser.Scene {
     if (!localStorage.getItem("personaje")) {
       localStorage.setItem("personaje", JSON.stringify({posX:200, posY:200}));
     }
-    console.log(typeof JSON.parse(localStorage.getItem("personaje")).posX)
     this.personaje = this.physics.add
     .sprite(JSON.parse(localStorage.getItem("personaje")).posX, JSON.parse(localStorage.getItem("personaje")).posY, "personaje")
     .setScale(0.3, 0.3)
