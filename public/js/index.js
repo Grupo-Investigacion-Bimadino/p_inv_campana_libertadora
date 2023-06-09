@@ -4,9 +4,9 @@ import { MenuScene } from "./menu.js";
 
 var config = {
   type: Phaser.AUTO,
-  width: 1345,
-  height: 604,
-  scene: [ MenuScene, Game, Batalla],
+  width: '100%',
+  height: '96%',
+  scene: [ MenuScene, Game,],
   physics: {
     default: "arcade",
     arcade: {
