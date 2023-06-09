@@ -18,8 +18,8 @@ export class Game extends Phaser.Scene {
 
   preload() {
     this.load.tilemapCSV("map", "./data/mapa.csv");
-    this.load.image("tiles", "./img/imagen.png");
-    this.load.image('enemigo', './img/enemigo.png');
+    this.load.image("tiles", "./img/Imagen.png");
+    this.load.image('enemigo', './img/Enemigo.png');
     this.load.audio('Audio_Fon', ['./assets/Audios/Fondo_Sound.wav']);
     this.load.audio('Pasos', ['./assets/Audios/Pasos.mp3']);
     this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
