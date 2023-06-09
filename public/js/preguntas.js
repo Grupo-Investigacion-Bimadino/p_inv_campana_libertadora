@@ -59,3 +59,17 @@ export function Preguntas(){
 
   return preguntas;
 }
+
+export function Puntos() {
+  var puntos = [
+      { n: 1, x: 10, y: 10, nivel: 1, tipo: "enemigo", vida: 90 },
+      { n: 2, x: 300, y: 400, nivel: 2, tipo: "enemigo", vida: 100 },
+      { n: 3, x: 500, y: 800, nivel: 3, tipo: "enemigo", vida: 100 },
+      { n: 4, x: 900, y: 610, nivel: 4, tipo: "enemigo", vida: 100 },
+      { n: 5, x: 1500, y: 1700, nivel: 5, tipo: "enemigo", vida: 100 },
+      { n: 6, x: 1300, y: 1300, nivel: 6, tipo: "enemigo", vida: 100 },
+      { n: 7, x: 427.5, y: 1245, nivel: 7, tipo: "enemigo", vida: 100 }
+  ];
+
+  return puntos;
+}
