@@ -1,17 +1,21 @@
+import { Batalla } from "./Batalla.js";
 import { Game } from "./game.js";
+import { MenuScene } from "./menu.js";
 
-const config = {
+var config = {
   type: Phaser.AUTO,
   width: 1345,
   height: 604,
-  scene: [Game],
+  scene: [ MenuScene, Game, Batalla],
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 300 },
+      gravity: { y: 0 },
       debug: false
     }
   }
 };
 
-const game = new Phaser.Game(config);
+  var game = new Phaser.Game(config);
+  
+

@@ -1,173 +1,167 @@
-import { Preguntas } from "./preguntas.js";
+import { Puntos } from "./preguntas.js";
 
 export class Game extends Phaser.Scene {
+  Ultimo;
+  Reproducir;
+  puntos = Puntos();
+  numEnemigo;
+
   constructor() {
     super({ key: "Game" });
     this.velocity = 200;
+    this.wrapRect;
+    this.aliens = [];
+    this.Ultimo = 1;
+    this.Reproducir = 1;
+    this.esc = 1;
   }
 
   preload() {
     this.load.tilemapCSV("map", "./data/mapa.csv");
     this.load.image("tiles", "./img/imagen.png");
-    this.load.image("personaje", "./img/Personaje.png");
-    console.log("Si");
+    this.load.image('enemigo', './img/enemigo.png');
+    this.load.audio('Audio_Fon', ['./assets/Audios/Fondo_Sound.wav']);
+    this.load.audio('Pasos', ['./assets/Audios/Pasos.mp3']);
+    this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
+    this.load.audio('Son_Bton_Bat', ['./assets/Audios/Son_Boton_Bat.mp3']);
+    this.load.spritesheet('PerFron', './img/SimonBolivar/front-Sheet.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('PerEsp', './img/SimonBolivar/back-Sheet.png', { frameWidth: 32, frameHeight: 32 });
+
   }
   create() {
+    this.sound.stopAll();
+    this.fondo = this.sound.add('Audio_Fon');
+    this.PasosD = this.sound.add('Pasos');
+    this.PasosZ = this.sound.add('Pasos');
+    this.PasosAr = this.sound.add('Pasos');
+    this.PasosAb = this.sound.add('Pasos');
+    this.Afondo = this.sound.add('Audio_Bat');
+    this.Batalla = this.sound.add('Son_Bton_Bat');
+
+
+    var puntaje = 10;
+
+    this.mainCamera = this.cameras.main;
+    this.mainCamera.setBounds(0, 0, 0, 0);
+    this.mainCamera.setFollowOffset(0, 0);
+
+    this.fondo.play();
+    this.fondo.setVolume = 0.1;
+
     var map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
     var tiles = map.addTilesetImage("tiles", null, 32, 32, 0, 0);
     var layer = map.createLayer(0, tiles);
+    this.cameras.main.setBounds(0, 0, 3200, 3200);
 
-    const preguntas = Preguntas();
+    this.wrapRect = new Phaser.Geom.Rectangle(0, 0, 1367, 1239);
 
-    const div = document.getElementById("con_preguntas");
-    const divOs = document.getElementById("oscuro");
+    this.enemigos = this.physics.add.staticGroup();
 
-    const button = document.getElementById("boton-personalizado");
+    for (let i = 0; i < 7; i++) {
+      this.enemigos.create(this.puntos[i].x, this.puntos[i].y, this.puntos[i].tipo,
+      ).setScale(0.3, 0.3).setSize(70, 70).setOffset(108, 110);
+    }
 
-    const Probar = () => {
-      var preguntaActual;
-      var respuestaSeleccionada;
+    localStorage.setItem("Enemigo", JSON.stringify(this.puntos));
 
-      var textoPregunta = this.add.text(400, 100, "", {
-        fontSize: "32px",
-        fill: "#F700FF",
+
+    /// debugger;
+    //Personaje
+    if (!localStorage.getItem("SimonBolivar")) {
+      localStorage.setItem("SimonBolivar", JSON.stringify({ posX: 200, posY: 200, vida: 100 }));
+    }
+    this.personaje = this.physics.add
+      .sprite(JSON.parse(localStorage.getItem("SimonBolivar")).posX, JSON.parse(localStorage.getItem("SimonBolivar")).posY, "PerFron")
+      .setScale(2)
+      .setBounce(0.2);
+
+      this.anims.create({
+        key: 'arriba',
+        frames: this.anims.generateFrameNumbers('PerEsp', { frames: [0, 1, 2, 3] }),
+        frameRate: 10,
+        repeat: -1
       });
-      var opciones = [];
+    
+      this.anims.create({
+        key: 'abajo',
+        frames: this.anims.generateFrameNumbers('PerFron', { frames: [0, 1, 2, 3] }),
+        frameRate: 10,
+        repeat: -1
+      });
 
-      function mezclarRespuestas(respuestas) {
-        // Crear un array con los índices de las respuestas
-        var indices = [...Array(respuestas.length).keys()];
-
-        // Mezclar los índices
-        for (var i = indices.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var temp = indices[i];
-          indices[i] = indices[j];
-          indices[j] = temp;
-        }
-
-        // Crear un nuevo array con las respuestas en el orden mezclado
-        var respuestasMezcladas = [];
-        for (var i = 0; i < indices.length; i++) {
-          respuestasMezcladas.push(respuestas[indices[i]]);
-        }
-        return respuestasMezcladas;
-      }
-
-      function preguntar() {
-        // Obtener pregunta aleatoria
-        preguntaActual = Phaser.Math.Between(0, preguntas.length - 1);
-
-        // Mezclar respuestas
-        var respuestasMezcladas = mezclarRespuestas(
-          preguntas[preguntaActual].respuestas
-        );
-
-        // Crear un elemento p para mostrar la pregunta
-        var preguntaEl = document.createElement("a");
-        preguntaEl.classList.add("Op_pre");
-        preguntaEl.textContent = preguntas[preguntaActual].pregunta;
-
-        // Agregar el elemento p como hijo del div con_preguntas
-        const divP = document.getElementById("preguntas");
-        div.innerHTML = "";
-        div.appendChild(preguntaEl);
-
-        respuestasMezcladas.forEach((respuesta, index) => {
-          const opcion = document.createElement("a");
-          opcion.classList.add("Op_res"); //AGREGAR ESTILOS
-          opcion.textContent = respuesta;
-          opcion.addEventListener("click", function () {
-            respuestaSeleccionada = respuesta;
-            validarRespuesta();
-          });
-          div.appendChild(opcion);
-        });
-      }
-
-      function validarRespuesta() {
-        var respuestaCorrecta = preguntas[preguntaActual].correcta;
-
-        if (respuestaSeleccionada === respuestaCorrecta) {
-          console.log("Respuesta correcta!");
-          // Incrementa el puntaje en 10
-          puntaje += 10;
-          // Actualiza el texto del objeto de texto
-          puntajeTexto.setText(`Experiencia: ${puntaje}`);
-        } else {
-          console.log("Respuesta incorrecta.");
-        }
-        preguntar();
-      }
-
-      // Crear opciones de respuesta
-      for (var i = 0; i < 4; i++) {
-        var opcion = this.add.text(400, 200 + i * 50, "", {
-          fontSize: "24px",
-          fill: "#F700FF",
-        });
-        opcion.setInteractive();
-        opcion.on("pointerdown", function () {
-          respuestaSeleccionada = this.text;
-          validarRespuesta();
-        });
-        opciones.push(opcion);
-      }
-
-      preguntar();
-    };
-
-    button.addEventListener("click", function () {
-      if (divOs.style.display === "block") {
-        divOs.style.display = "none";
-      } else {
-        divOs.style.display = "block";
-        Probar();
-      }
-    });
-
-    let puntaje = 0;
-    let puntajeTexto = this.add.text(10, 10, `Experiencia: ${puntaje}`, {
-      fontSize: "24px",
-      fill: "#FFF",
-      fontFamily: "Comic Sans",
-    });
-
-
-    //Personaje
-    this.personaje = this.add
-      .sprite(200, 200, "personaje")
-      .setScale(0.3, 0.3)
-      .setInteractive();
-    //Personaje
+    if (!localStorage.getItem('numEnemigo')) {
+      localStorage.setItem('numEnemigo', JSON.stringify(this.numEnemigo));
+    }
   }
 
-  update(time, delta) {
-    //MOVIMIENTO DEL PERSONAJE.
-    let dx = 0,
-      dy = 0;
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isDown) {
-      dx -= 1;
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isDown) {
-      dx += 1;
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isDown) {
-      dy -= 1;
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isDown) {
-      dy += 1;
+  update(time, dt) {
+
+    let { posX, posY } = localStorage.getItem("SimonBolivar")
+    // Guardar el estado del juego actualizado
+
+    this.physics.add.collider(this.personaje, this.enemigos, (personaje, enemigo) => {
+      this.scene.start('Batalla');
+      var div = document.getElementById("con_preguntas");
+      div.style.display = "block";
+      var div = document.getElementById("barra-vida");
+      div.style.display = "block";
+      var div = document.getElementById("barra-vidaE");
+      div.style.display = "block";
+
+      this.numEnemigo = this.enemigos.getChildren().indexOf(enemigo);
+      localStorage.setItem('numEnemigo', this.numEnemigo);
+    });
+
+    if (this.Ultimo === 2) {
+      if (this.Reproducir === 1) {
+        this.Afondo.play();
+        this.Afondo.setVolume(0.3);
+        this.Afondo.setSeek(1, 5);
+        this.Reproducir = 2;
+      }
+      this.fondo.stop();
     }
 
-    if (dx !== 0 || dy !== 0) {
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const normalizedX = dx / distance;
-      const normalizedY = dy / distance;
-      this.personaje.x += (normalizedX * this.velocity * delta) / 1000;
-      this.personaje.y += (normalizedY * this.velocity * delta) / 1000;
-      const angle = Phaser.Math.Angle.Between(0, 0, normalizedX, normalizedY);
-      this.personaje.angle = (angle * 180) / Math.PI;
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).isDown) {
+      if (this.Ultimo === 1) {
+        localStorage.setItem("PerFron", JSON.stringify({ posX: this.personaje.x, posY: this.personaje.y }));
+        this.scene.start('MenuScene');
+      }
     }
+
+    //MOVIMIENTO DEL PERSONAJE.
+
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isUp) {
+      this.personaje.setVelocityY(0);
+      this.PasosAb.play();
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isUp) {
+      this.personaje.setVelocityX(0);
+      this.PasosD.play();
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isUp) {
+      this.personaje.setVelocityX(0);
+      this.PasosZ.play();
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isUp) {
+      this.personaje.setVelocityY(0);
+      this.PasosAr.play();
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isDown && this.Ultimo === 1) {
+      this.personaje.setVelocityX(-150);
+      this.personaje.anims.play('abajo');
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isDown && this.Ultimo === 1) {
+      this.personaje.setVelocityX(150);
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isDown && this.Ultimo === 1) {
+      this.personaje.setVelocityY(150);
+      this.personaje.play('Arriba');
+    }
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isDown && this.Ultimo === 1) {
+      this.personaje.setVelocityY(-150);
+    }
+
   }
 
 }
