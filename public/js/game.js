@@ -184,8 +184,8 @@ export class Game extends Phaser.Scene {
           this.personaje.anims.play('izquierda', true);
         }
       }else {
-        this.personaje.anims.stop();
-      }
+          this.personaje.anims.stop();
+        }
     }
 
   }
