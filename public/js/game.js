@@ -24,8 +24,10 @@ export class Game extends Phaser.Scene {
     this.load.audio('Pasos', ['./assets/Audios/Pasos.mp3']);
     this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
     this.load.audio('Son_Bton_Bat', ['./assets/Audios/Son_Boton_Bat.mp3']);
-    this.load.spritesheet('PerFron', './img/SimonBolivar/front-Sheet.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.spritesheet('PerEsp', './img/SimonBolivar/back-Sheet.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('PerFron', './img/SimonBolivar/front-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+    this.load.spritesheet('PerEsp', './img/SimonBolivar/back-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+    this.load.spritesheet('PerDer', './img/SimonBolivar/right-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+    this.load.spritesheet('PerIzq', './img/SimonBolivar/left-Sheet.png', { frameWidth: 320, frameHeight: 320 });
 
   }
   create() {
@@ -72,22 +74,36 @@ export class Game extends Phaser.Scene {
     }
     this.personaje = this.physics.add
       .sprite(JSON.parse(localStorage.getItem("SimonBolivar")).posX, JSON.parse(localStorage.getItem("SimonBolivar")).posY, "PerFron")
-      .setScale(2)
+      .setScale(0.2)
       .setBounce(0.2);
 
-      this.anims.create({
-        key: 'arriba',
-        frames: this.anims.generateFrameNumbers('PerEsp', { frames: [0, 1, 2, 3] }),
-        frameRate: 10,
-        repeat: -1
-      });
-    
-      this.anims.create({
-        key: 'abajo',
-        frames: this.anims.generateFrameNumbers('PerFron', { frames: [0, 1, 2, 3] }),
-        frameRate: 10,
-        repeat: -1
-      });
+    this.anims.create({
+      key: 'arriba',
+      frames: this.anims.generateFrameNumbers('PerEsp', { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'abajo',
+      frames: this.anims.generateFrameNumbers('PerFron', { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'derecha',
+      frames: this.anims.generateFrameNumbers('PerDer', { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'izquierda',
+      frames: this.anims.generateFrameNumbers('PerIzq', { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
 
     if (!localStorage.getItem('numEnemigo')) {
       localStorage.setItem('numEnemigo', JSON.stringify(this.numEnemigo));
@@ -130,36 +146,46 @@ export class Game extends Phaser.Scene {
     }
 
     //MOVIMIENTO DEL PERSONAJE.
+    const keyA = this.input.keyboard.addKey('A');
+    const keyD = this.input.keyboard.addKey('D');
+    const keyW = this.input.keyboard.addKey('W');
+    const keyS = this.input.keyboard.addKey('S');
+    this.personaje.setVelocity(0);
 
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isUp) {
-      this.personaje.setVelocityY(0);
-      this.PasosAb.play();
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isUp) {
-      this.personaje.setVelocityX(0);
-      this.PasosD.play();
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isUp) {
-      this.personaje.setVelocityX(0);
-      this.PasosZ.play();
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isUp) {
-      this.personaje.setVelocityY(0);
-      this.PasosAr.play();
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A).isDown && this.Ultimo === 1) {
-      this.personaje.setVelocityX(-150);
-      this.personaje.anims.play('abajo');
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D).isDown && this.Ultimo === 1) {
-      this.personaje.setVelocityX(150);
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S).isDown && this.Ultimo === 1) {
-      this.personaje.setVelocityY(150);
-      this.personaje.play('Arriba');
-    }
-    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W).isDown && this.Ultimo === 1) {
-      this.personaje.setVelocityY(-150);
+    if (this.Ultimo === 1) {
+      if (keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown) {
+        if (keyD.isDown && keyW.isDown) {
+          this.personaje.setVelocityX(150);
+          this.personaje.setVelocityY(-150);
+          this.personaje.anims.play('arriba', true);
+        } else if (keyA.isDown && keyW.isDown) {
+          this.personaje.setVelocityX(-150);
+          this.personaje.setVelocityY(-150);
+          this.personaje.anims.play('arriba', true);
+        } else if (keyD.isDown && keyS.isDown) {
+          this.personaje.setVelocityX(150);
+          this.personaje.setVelocityY(150);
+          this.personaje.anims.play('abajo', true);
+        } else if (keyA.isDown && keyS.isDown) {
+          this.personaje.setVelocityX(-150);
+          this.personaje.setVelocityY(150);
+          this.personaje.anims.play('abajo', true);
+        } else if (keyD.isDown) {
+          this.personaje.setVelocityX(150);
+          this.personaje.anims.play('derecha', true);
+        } else if (keyW.isDown) {
+          this.personaje.setVelocityY(-150);
+          this.personaje.anims.play('arriba', true);
+        } else if (keyS.isDown) {
+          this.personaje.setVelocityY(150);
+          this.personaje.anims.play('abajo', true);
+        } else if (keyA.isDown) {
+          this.personaje.setVelocityX(-150);
+          this.personaje.anims.play('izquierda', true);
+        }
+      }else {
+        this.personaje.anims.stop();
+      }
     }
 
   }
