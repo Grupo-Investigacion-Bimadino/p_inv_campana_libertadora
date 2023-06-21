@@ -20,10 +20,10 @@ export class Game extends Phaser.Scene {
     this.load.tilemapCSV("map", "./data/mapa.csv");
     this.load.image("tiles", "./img/Imagen.png");
     this.load.image('enemigo', './img/Enemigo.png');
-    this.load.audio('Audio_Fon', ['./assets/Audios/Fondo_Sound.wav']);
-    this.load.audio('Pasos', ['./assets/Audios/Pasos.mp3']);
-    this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
-    this.load.audio('Son_Bton_Bat', ['./assets/Audios/Son_Boton_Bat.mp3']);
+    this.load.audio('Audio_Fon', './assets/Audios/Fondo_Sound.wav');
+    this.load.audio('Pasos', './assets/Audios/Pasos.mp3');
+    this.load.audio('Audio_Bat', './assets/Audios/Batalla.mp3');
+    this.load.audio('Son_Bton_Bat', './assets/Audios/Son_Boton_Bat.mp3');
     this.load.spritesheet('PerFron', './img/SimonBolivar/front-Sheet.png', { frameWidth: 320, frameHeight: 320 });
     this.load.spritesheet('PerEsp', './img/SimonBolivar/back-Sheet.png', { frameWidth: 320, frameHeight: 320 });
     this.load.spritesheet('PerDer', './img/SimonBolivar/right-Sheet.png', { frameWidth: 320, frameHeight: 320 });
@@ -158,10 +158,12 @@ export class Game extends Phaser.Scene {
           this.personaje.setVelocityX(150);
           this.personaje.setVelocityY(-150);
           this.personaje.anims.play('arriba', true);
+          this.PasosAr.stop();
         } else if (keyA.isDown && keyW.isDown) {
           this.personaje.setVelocityX(-150);
           this.personaje.setVelocityY(-150);
           this.personaje.anims.play('arriba', true);
+          this.PasosAr.stop();
         } else if (keyD.isDown && keyS.isDown) {
           this.personaje.setVelocityX(150);
           this.personaje.setVelocityY(150);
@@ -183,9 +185,13 @@ export class Game extends Phaser.Scene {
           this.personaje.setVelocityX(-150);
           this.personaje.anims.play('izquierda', true);
         }
-      }else {
-          this.personaje.anims.stop();
-        }
+      } else if (!(keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown)) {
+        this.PasosD.play();
+        this.personaje.anims.stop();
+      }
+    }else{
+      this.PasosD.play();
+      this.personaje.anims.stop();
     }
 
   }
