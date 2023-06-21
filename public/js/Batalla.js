@@ -12,14 +12,14 @@ export class Batalla extends Phaser.Scene {
         this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
         this.load.audio('Son_Bton_Bat', ['./assets/Audios/Son_Boton_Bat.mp3']);
         this.load.audio('Disparo', ['./assets/Audios/Disparo.mp3']);
-        this.load.image('Fondo', ['./img/Fondo_Bat.png'])
+        this.load.image("fondo", ["./img/fondoBatalla.png"]);
         this.load.image('Esclavo', ['./img/Esclavito.png'])
         this.load.image('Soldado', ['./img/Soldado.png'])
 
     }
     create() {
-        const Fondo = this.add.image(-50, 0, 'Fondo').setOrigin(0, 0).setScale(0.25);
-        Fondo.depth = 0;
+        const fondo = this.add.image(-100, -10, 'fondo').setOrigin(0, 0).setScale(0.25);
+        fondo.depth = 0;
         const Esclavo = this.add.image(50, 200, 'Esclavo').setOrigin(0, 0).setScale(0.25);
         Esclavo.depth = 1;
         const Soldado = this.add.image(600, 80, 'Soldado').setOrigin(0, 0).setScale(0.25);
@@ -35,7 +35,7 @@ export class Batalla extends Phaser.Scene {
         var numEnemigo = localStorage.getItem('numEnemigo');
         var vidaMaxima = 100; 
         var AltoMaximo = 200; 
-        var VidaP = JSON.parse(localStorage.getItem("personaje")).vida;
+        var VidaP = JSON.parse(localStorage.getItem("SimonBolivar")).vida;
         const arreglo = JSON.parse(localStorage.getItem('Enemigo'));
         const elemento = arreglo[numEnemigo];
         var VidaE = elemento.vida;
@@ -53,7 +53,6 @@ export class Batalla extends Phaser.Scene {
 
 
         const div = document.getElementById("con_preguntas");
-        const divOs = document.getElementById("oscuro");
 
         const Probar = () => {
             var preguntaActual;
@@ -168,7 +167,7 @@ export class Batalla extends Phaser.Scene {
 
     update() {
         if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).isDown) {
-            this.scene.start('Game');
+            this.Estado === 1;
         }
         
         if (this.Estado===1) {
