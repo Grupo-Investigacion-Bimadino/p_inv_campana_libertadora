@@ -121,7 +121,7 @@ export class Game extends Phaser.Scene {
     /// debugger;
     //Personaje
     if (!localStorage.getItem("SimonBolivar")) {
-      localStorage.setItem("SimonBolivar", JSON.stringify({ posX: 1815, posY: 882, vida: 100 }));
+      localStorage.setItem("SimonBolivar", JSON.stringify({ posX: 157, posY: 947, vida: 100 }));
     }
     this.personaje = this.physics.add
       .sprite(JSON.parse(localStorage.getItem("SimonBolivar")).posX, JSON.parse(localStorage.getItem("SimonBolivar")).posY, "PerFron")
