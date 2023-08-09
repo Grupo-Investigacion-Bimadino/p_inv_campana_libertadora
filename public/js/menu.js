@@ -51,12 +51,12 @@ export class MenuScene extends Phaser.Scene {
         });
         EspadaDer.depth = 1;
 
-        // Crear el botón "Continuar"
+        // Crear el botón "NuevaPartida"
         const buttonNew = this.add.sprite(650, 100, "NewPar")
             .setScale(0.25)
             .setInteractive()
             .on("pointerup", () => {
-                localStorage.removeItem('personaje');
+                localStorage.removeItem('SimonBolivar');
                 localStorage.removeItem('Enemigo');
                 localStorage.removeItem('numEnemigo');
                 this.scene.start("Game");
