@@ -176,7 +176,7 @@ export class Game extends Phaser.Scene {
     capa3.depth = 2;
     capa4.depth = 3;
     capa5.depth = 4;
-    capa6.depth = 6;
+    capa6.depth = 5;
     this.enemigos.getChildren().forEach((enemy) => {
       enemy.depth =  1;
     });  
