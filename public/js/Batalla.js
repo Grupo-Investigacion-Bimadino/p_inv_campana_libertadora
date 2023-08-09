@@ -12,18 +12,26 @@ export class Batalla extends Phaser.Scene {
         this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
         this.load.audio('Son_Bton_Bat', ['./assets/Audios/Son_Boton_Bat.mp3']);
         this.load.audio('Disparo', ['./assets/Audios/Disparo.mp3']);
-        this.load.image("fondo", ["./img/fondoBatalla.png"]);
-        this.load.image('Esclavo', ['./img/Esclavito.png'])
-        this.load.image('Soldado', ['./img/Soldado.png'])
 
     }
     create() {
-        const fondo = this.add.image(-100, -10, 'fondo').setOrigin(0, 0).setScale(0.25);
+        var div1 = document.getElementById("con_preguntas");
+        div1.style.display = "block";
+        var div1 = document.getElementById("barra-vida");
+        div1.style.display = "block";
+        var div1 = document.getElementById("barra-vidaE");
+        div1.style.display = "block";
+
+        var imagen = this.textures.get('fondo');
+        var imagen2 = this.textures.get('esclavo');
+        var imagen3 = this.textures.get('soldado');
+
+        const fondo = this.add.image(-100, -10, imagen).setOrigin(0, 0).setScale(0.25);
         fondo.depth = 0;
-        const Esclavo = this.add.image(50, 200, 'Esclavo').setOrigin(0, 0).setScale(0.25);
-        Esclavo.depth = 1;
-        const Soldado = this.add.image(600, 80, 'Soldado').setOrigin(0, 0).setScale(0.25);
-        Esclavo.depth = 1;
+        const Español = this.add.image(50, 200, imagen2).setOrigin(0, 0).setScale(0.25);
+        Español.depth = 1;
+        const Soldado = this.add.image(600, 80, imagen3).setOrigin(0, 0).setScale(0.25);
+        Soldado.depth = 1;
 
         this.sound.stopAll();
         this.Afondo = this.sound.add('Audio_Bat');
@@ -33,8 +41,8 @@ export class Batalla extends Phaser.Scene {
 
 
         var numEnemigo = localStorage.getItem('numEnemigo');
-        var vidaMaxima = 100; 
-        var AltoMaximo = 200; 
+        var vidaMaxima = 100;
+        var AltoMaximo = 200;
         var VidaP = JSON.parse(localStorage.getItem("SimonBolivar")).vida;
         const arreglo = JSON.parse(localStorage.getItem('Enemigo'));
         const elemento = arreglo[numEnemigo];
@@ -114,7 +122,7 @@ export class Batalla extends Phaser.Scene {
                     div.appendChild(opcion);
                 });
             }
-            this.Estado = 0; 
+            this.Estado = 0;
             const self = this;
             var Disparo = this.sound.add('Disparo');
             function validarRespuesta() {
@@ -123,22 +131,22 @@ export class Batalla extends Phaser.Scene {
                 if (respuestaSeleccionada === respuestaCorrecta) {
                     VidaE -= 15;
                     const porcentajeVidaE = (VidaE / vidaMaxima) * 100;
-                    barraVidaE.style.width = `${(porcentajeVidaE / 100) * AltoMaximo}px`; 
+                    barraVidaE.style.width = `${(porcentajeVidaE / 100) * AltoMaximo}px`;
                     Disparo.play();
                     if (VidaE < 1) {
                         self.Estado = 1;
-                        barraVidaE.style.width = `${200}px`; 
-                        barraVida.style.width = `${200}px`; 
+                        barraVidaE.style.width = `${200}px`;
+                        barraVida.style.width = `${200}px`;
                     }
                 } else {
                     VidaP -= 25;
                     const porcentajeVida = (VidaP / vidaMaxima) * 100;
-                    barraVida.style.width = `${(porcentajeVida / 100) * AltoMaximo}px`; 
+                    barraVida.style.width = `${(porcentajeVida / 100) * AltoMaximo}px`;
                     Disparo.play();
                     if (VidaP < 1) {
                         self.Estado = 1;
-                        barraVidaE.style.width = `${200}px`; 
-                        barraVida.style.width = `${200}px`; 
+                        barraVidaE.style.width = `${200}px`;
+                        barraVida.style.width = `${200}px`;
                     }
                 }
                 preguntar();
@@ -159,9 +167,11 @@ export class Batalla extends Phaser.Scene {
             }
 
             preguntar();
+
         };
 
         Probar();
+        
 
     }
 
@@ -169,8 +179,8 @@ export class Batalla extends Phaser.Scene {
         if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).isDown) {
             this.Estado === 1;
         }
-        
-        if (this.Estado===1) {
+
+        if (this.Estado === 1) {
             var Derrota = document.getElementById("con_preguntas");
             Derrota.style.display = "none";
             var VidaP = document.getElementById("barra-vida");
@@ -178,7 +188,7 @@ export class Batalla extends Phaser.Scene {
             var VidaE = document.getElementById("barra-vidaE");
             VidaE.style.display = "none";
             this.scene.start('Game');
-        } 
+        }
 
     }
 
