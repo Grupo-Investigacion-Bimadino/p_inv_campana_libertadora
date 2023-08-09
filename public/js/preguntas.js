@@ -1,4 +1,4 @@
-export function Preguntas(){
+export function Preguntas() {
   var preguntas = [
     {
       pregunta: "Cuando ocurrió el grito de independencia de 1810 Simón Bolívar se encontraba en una misión diplomática en la ciudad europea de:",
@@ -54,7 +54,7 @@ export function Preguntas(){
       pregunta: "¿Quién lideró la Campaña Libertadora en Venezuela?",
       respuestas: ["Simón Bolívar", "Antonio José de Sucre", "José Antonio Páez", "Rafael Urdaneta"],
       correcta: "Simón Bolívar"
-    }    
+    }
   ];
 
   return preguntas;
@@ -62,14 +62,23 @@ export function Preguntas(){
 
 export function Puntos() {
   var puntos = [
-      { n: 1, x: 10, y: 10, nivel: 1, tipo: "enemigo", vida: 90 },
-      { n: 2, x: 300, y: 400, nivel: 2, tipo: "enemigo", vida: 100 },
-      { n: 3, x: 500, y: 800, nivel: 3, tipo: "enemigo", vida: 100 },
-      { n: 4, x: 900, y: 610, nivel: 4, tipo: "enemigo", vida: 100 },
-      { n: 5, x: 1500, y: 1700, nivel: 5, tipo: "enemigo", vida: 100 },
-      { n: 6, x: 1300, y: 1300, nivel: 6, tipo: "enemigo", vida: 100 },
-      { n: 7, x: 427.5, y: 1245, nivel: 7, tipo: "enemigo", vida: 100 }
+    { n: 1, x: 1825, y: 892, nivel: 1, tipo: "eneFron", vida: 90 },
+    { n: 2, x: 300, y: 400, nivel: 2, tipo: "eneFron", vida: 100 },
+    { n: 3, x: 500, y: 800, nivel: 3, tipo: "eneFron", vida: 100 },
+    { n: 4, x: 900, y: 610, nivel: 4, tipo: "eneFron", vida: 100 },
+    { n: 5, x: 1500, y: 1700, nivel: 5, tipo: "eneFron", vida: 100 },
+    { n: 6, x: 1300, y: 1300, nivel: 6, tipo: "eneFron", vida: 100 },
+    { n: 7, x: 427.5, y: 1245, nivel: 7, tipo: "eneFron", vida: 100 }
   ];
 
   return puntos;
+}
+
+export function movimiento() {
+  var movimiento = [
+    [{ x: 1825, y: 892 }, { x: 406, y: 909 }, { x: 1825, y: 892 }],  // Ruta del enemigo 1
+    [{ x: 500, y: 200 }, { x: 550, y: 250 }, { x: 700, y: 400 }, { x: 300, y: 500 }, { x: 500, y: 200 }],  // Ruta del enemigo 2
+];
+
+  return movimiento;
 }

@@ -4,7 +4,8 @@ export class MenuScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.audio('fondo_Audio', './assets/Audios/Son_Boton_Bat.mp3');
+        this.load.audio('boton_Audio', './assets/Audios/Son_Boton_Bat.mp3');
+        this.load.audio('fondo_Audio', './assets/Audios/Fondo_Sound.wav');
         this.load.image("fondo_1", "./img/Fondo_Menu.png");
         this.load.image("NewPar", "./img/NuevaPartida.png");
         this.load.image("TituloMenu", "./img/Titulo_Menu.png");
@@ -18,8 +19,11 @@ export class MenuScene extends Phaser.Scene {
 
     create() {
         this.sound.stopAll()
+        this.Bot = this.sound.add('boton_Audio');
+        this.Bot.play();
         this.Fon = this.sound.add('fondo_Audio');
         this.Fon.play();
+
 
         this.add.image(0, 0, 'fondo_1').setOrigin(0, 0).setScale(0.25);
         const Titulo = this.add.image(670, 110, "TituloMenu").setScale(0.25);
@@ -89,6 +93,7 @@ export class MenuScene extends Phaser.Scene {
             .setScale(0.25)
             .setInteractive()
             .on("pointerup", () => {
+                this.scene.start("creditos");
             });
 
         this.tweens.add({
