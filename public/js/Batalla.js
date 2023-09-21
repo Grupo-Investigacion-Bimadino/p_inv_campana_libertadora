@@ -1,4 +1,5 @@
 import { Preguntas } from "./preguntas.js";
+import { movimiento } from "./preguntas.js";
 
 export class Batalla extends Phaser.Scene {
     Ultimo;
@@ -15,12 +16,10 @@ export class Batalla extends Phaser.Scene {
 
     }
     create() {
+        this.scene.stop("UI");
         var div1 = document.getElementById("con_preguntas");
         div1.style.display = "block";
-        var div1 = document.getElementById("barra-vida");
-        div1.style.display = "block";
-        var div1 = document.getElementById("barra-vidaE");
-        div1.style.display = "block";
+
 
         var imagen = this.textures.get('fondo');
         var imagen2 = this.textures.get('esclavo');
@@ -28,9 +27,9 @@ export class Batalla extends Phaser.Scene {
 
         const fondo = this.add.image(-100, -10, imagen).setOrigin(0, 0).setScale(0.25);
         fondo.depth = 0;
-        const Español = this.add.image(50, 200, imagen2).setOrigin(0, 0).setScale(0.25);
-        Español.depth = 1;
-        const Soldado = this.add.image(600, 80, imagen3).setOrigin(0, 0).setScale(0.25);
+        const Bolivar = this.add.image(50, 200, imagen2).setOrigin(0, 0).setScale(0.7);
+        Bolivar.depth = 1;
+        const Soldado = this.add.image(600, 80, imagen3).setOrigin(0, 0).setScale(0.5);
         Soldado.depth = 1;
 
         this.sound.stopAll();
@@ -40,16 +39,64 @@ export class Batalla extends Phaser.Scene {
         this.Afondo.volume = 0.1;
 
 
-        var numEnemigo = localStorage.getItem('numEnemigo');
+        var numEnemigo = JSON.parse(localStorage.getItem('numEnemigo'));
         var vidaMaxima = 100;
         var AltoMaximo = 200;
-        var VidaP = JSON.parse(localStorage.getItem("SimonBolivar")).vida;
-        const arreglo = JSON.parse(localStorage.getItem('Enemigo'));
-        const elemento = arreglo[numEnemigo];
-        var VidaE = elemento.vida;
+        const Personaje = JSON.parse(localStorage.getItem("SimonBolivar"));
+        var VidaP = Personaje.vida;
+        const Enemigos = JSON.parse(localStorage.getItem('Enemigo'));
+        const Rutas = JSON.parse(localStorage.getItem('Rutas'));
+        const enemigo = Enemigos[numEnemigo];
+        var VidaE = enemigo.vida;
 
-        const barraVida = document.getElementById('barra-vida');
-        const barraVidaE = document.getElementById('barra-vidaE');
+
+
+        const vidaContainer = this.add.container(640, 40);
+
+        const fondoBarra = this.add.graphics();
+        fondoBarra.fillStyle(0x000000);
+        fondoBarra.fillRect(-2, -2, 204, 24);
+        vidaContainer.add(fondoBarra);
+
+        const barraColor = this.add.graphics();
+        barraColor.fillStyle(0xff0000);
+        barraColor.fillRect(0, 0, (VidaE / vidaMaxima) * 200, 20);
+        vidaContainer.add(barraColor);
+
+        const vidaContainerPer = this.add.container(140, 500);
+
+        const fondoBarraPer = this.add.graphics();
+        fondoBarraPer.fillStyle(0x000000);
+        fondoBarraPer.fillRect(-2, -2, 204, 24);
+        vidaContainerPer.add(fondoBarraPer);
+
+        const barraColorPer = this.add.graphics();
+        barraColorPer.fillStyle(0xff0000);
+        barraColorPer.fillRect(0, 0, (VidaP / vidaMaxima) * 200, 20);
+        vidaContainerPer.add(barraColorPer);
+
+        // Ajustar el tamaño de las barras de vida al cambiar el tamaño de la ventana
+        const self = this;
+        this.scale.on('resize', function (gameSize) {
+            const width = gameSize.width * 0.2;
+
+            vidaContainer.setPosition(width, 40);
+            fondoBarra.clear();
+            fondoBarra.fillStyle(0x000000);
+            fondoBarra.fillRect(0, 0, width, 20);
+            barraColor.clear();
+            barraColor.fillStyle(0xff0000);
+            barraColor.fillRect(0, 0, (VidaE / vidaMaxima) * width, 20);
+
+            vidaContainerPer.setPosition(140, 500);
+            fondoBarraPer.clear();
+            fondoBarraPer.fillStyle(0x000000);
+            fondoBarraPer.fillRect(0, 0, 200, 20);
+            barraColorPer.clear();
+            barraColorPer.fillStyle(0xff0000);
+            barraColorPer.fillRect(0, 0, (VidaP / vidaMaxima) * 200, 20);
+        });
+
 
 
         this.cameras.main.setBounds(0, 0, 3200, 3200);
@@ -122,6 +169,7 @@ export class Batalla extends Phaser.Scene {
                     div.appendChild(opcion);
                 });
             }
+
             this.Estado = 0;
             const self = this;
             var Disparo = this.sound.add('Disparo');
@@ -129,24 +177,45 @@ export class Batalla extends Phaser.Scene {
                 var respuestaCorrecta = preguntas[preguntaActual].correcta;
                 // Acceder a 'Estado' a través de 'self'
                 if (respuestaSeleccionada === respuestaCorrecta) {
-                    VidaE -= 15;
+                    VidaE -= 25;
                     const porcentajeVidaE = (VidaE / vidaMaxima) * 100;
-                    barraVidaE.style.width = `${(porcentajeVidaE / 100) * AltoMaximo}px`;
+                    const nuevaLongitud = (porcentajeVidaE / 100) * AltoMaximo;
+                    barraColor.clear(); // Limpiar la barra de color
+                    barraColor.fillStyle(0xff0000); // Establecer el color de la barra
+                    barraColor.fillRect(0, 0, nuevaLongitud, 20);
                     Disparo.play();
+                    Enemigos[numEnemigo].vida = VidaE;
+                    localStorage.setItem('Enemigo', JSON.stringify(Enemigos));
                     if (VidaE < 1) {
                         self.Estado = 1;
-                        barraVidaE.style.width = `${200}px`;
-                        barraVida.style.width = `${200}px`;
+                        Enemigos.splice(numEnemigo, 1);
+                        Rutas.splice(numEnemigo, 1);
+                        localStorage.setItem('Enemigo', JSON.stringify(Enemigos));
+                        localStorage.setItem('Rutas', JSON.stringify(Rutas));
+                        Personaje.vida = VidaP;
+                        localStorage.setItem("SimonBolivar", JSON.stringify(Personaje));
+                        console.log(Personaje);
                     }
                 } else {
                     VidaP -= 25;
                     const porcentajeVida = (VidaP / vidaMaxima) * 100;
-                    barraVida.style.width = `${(porcentajeVida / 100) * AltoMaximo}px`;
+                    const nuevaLongitudPer = (porcentajeVida / 100) * AltoMaximo;
+                    barraColorPer.clear(); // Limpiar la barra de color
+                    barraColorPer.fillStyle(0xff0000); // Establecer el color de la barra
+                    barraColorPer.fillRect(0, 0, nuevaLongitudPer, 20);
                     Disparo.play();
                     if (VidaP < 1) {
                         self.Estado = 1;
-                        barraVidaE.style.width = `${200}px`;
-                        barraVida.style.width = `${200}px`;
+                        localStorage.setItem("SimonBolivar", JSON.stringify({ posX: 157, posY: 947, vida: VidaP }));
+                        const rutasEnemigos = JSON.parse(localStorage.getItem("Rutas"));
+                        const rutaEnemigo = rutasEnemigos[numEnemigo];
+                        for (let i = 0; i < rutasEnemigos.length; i++) {
+                            if (rutaEnemigo.length > 2) {
+                                const element = rutasEnemigos[i];
+                                element.splice(0, 1);
+                                localStorage.setItem('Rutas', JSON.stringify(rutasEnemigos));        
+                            }
+                        }          
                     }
                 }
                 preguntar();
@@ -171,11 +240,12 @@ export class Batalla extends Phaser.Scene {
         };
 
         Probar();
-        
+
 
     }
 
     update() {
+
         if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).isDown) {
             this.Estado === 1;
         }
@@ -183,10 +253,6 @@ export class Batalla extends Phaser.Scene {
         if (this.Estado === 1) {
             var Derrota = document.getElementById("con_preguntas");
             Derrota.style.display = "none";
-            var VidaP = document.getElementById("barra-vida");
-            VidaP.style.display = "none";
-            var VidaE = document.getElementById("barra-vidaE");
-            VidaE.style.display = "none";
             this.scene.start('Game');
         }
 
