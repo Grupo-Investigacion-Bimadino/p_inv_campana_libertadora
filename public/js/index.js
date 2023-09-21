@@ -2,12 +2,15 @@ import { Batalla } from "./Batalla.js";
 import { Game } from "./game.js";
 import { MenuScene } from "./menu.js";
 // import { creditos } from "./creditos.js";
+import { CasaFrancisco } from "./CasaFrancisco.js";
+import { Conversacion } from "./conversacion.js";
+import { UI } from "./UI.js";
 
 var config = {
   type: Phaser.AUTO,
   width: '100%',
   height: '96%',
-  scene: [ MenuScene, Game, Batalla],
+  scene: [MenuScene, Game, Batalla, CasaFrancisco, Conversacion, UI],
   physics: {
     default: "arcade",
     arcade: {

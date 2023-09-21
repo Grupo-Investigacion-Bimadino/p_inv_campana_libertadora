@@ -1,4 +1,7 @@
+import { movimiento } from "./preguntas.js";
+
 export class MenuScene extends Phaser.Scene {
+    rutas = movimiento();
     constructor() {
         super({ key: "MenuScene" });
     }
@@ -40,7 +43,7 @@ export class MenuScene extends Phaser.Scene {
             ease: 'Lunear',
         });
         EspadaDer.depth = 1;
-        
+
         const EspadaIzq = this.add.image(0, 700, "EspadaIzq").setScale(0.25);
         this.tweens.add({
             targets: EspadaIzq,
@@ -59,7 +62,12 @@ export class MenuScene extends Phaser.Scene {
                 localStorage.removeItem('SimonBolivar');
                 localStorage.removeItem('Enemigo');
                 localStorage.removeItem('numEnemigo');
-                this.scene.start("Game");
+                localStorage.removeItem('Rutas');
+                localStorage.removeItem('Aliados');
+
+                localStorage.setItem("Rutas", JSON.stringify(this.rutas));
+                this.Fon.stop();
+                this.scene.start("Conversacion");
             });
 
 
