@@ -170,7 +170,6 @@ export class Batalla extends Phaser.Scene {
                 });
             }
 
-
             this.Estado = 0;
             const self = this;
             var Disparo = this.sound.add('Disparo');
