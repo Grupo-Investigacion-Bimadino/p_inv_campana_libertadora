@@ -19,7 +19,7 @@ export class Conversacion extends Phaser.Scene {
 
         this.cameras.main.setBackgroundColor('rgba(0, 0, 0, 1)');
         if (!localStorage.getItem("SimonBolivar")) {
-            localStorage.setItem("SimonBolivar", JSON.stringify({ posX: 157, posY: 947, vida: 100, estado: 1 }));
+            localStorage.setItem("SimonBolivar", JSON.stringify({ posX: 157, posY: 947, vida: 100, estado: 1, conocimiento: 0}));
           }
 
         this.jugador = JSON.parse(localStorage.getItem('SimonBolivar'));

@@ -1,3 +1,4 @@
+import { Game } from "./game.js";
 import { Preguntas } from "./preguntas.js";
 import { movimiento } from "./preguntas.js";
 
@@ -5,6 +6,7 @@ export class Batalla extends Phaser.Scene {
     Ultimo;
     Estado;
     Reproducir;
+    Ganador;
     constructor() {
         super({ key: "Batalla" });
     }
@@ -12,10 +14,11 @@ export class Batalla extends Phaser.Scene {
     preload() {
         this.load.audio('Audio_Bat', ['./assets/Audios/Batalla.mp3']);
         this.load.audio('Son_Bton_Bat', ['./assets/Audios/Son_Boton_Bat.mp3']);
-        this.load.audio('Disparo', ['./assets/Audios/Disparo.mp3']);
+        this.load.audio('Disparo', ['./assets/Audios/Ataque.wav']);
 
     }
     create() {
+        this.Ganador = "";
         this.scene.stop("UI");
         var div1 = document.getElementById("con_preguntas");
         div1.style.display = "block";
@@ -27,16 +30,16 @@ export class Batalla extends Phaser.Scene {
 
         const fondo = this.add.image(-100, -10, imagen).setOrigin(0, 0).setScale(0.25);
         fondo.depth = 0;
-        const Bolivar = this.add.image(50, 200, imagen2).setOrigin(0, 0).setScale(0.7);
+        const Bolivar = this.add.image(140, 300, imagen2).setOrigin(0, 0).setScale(0.7);
         Bolivar.depth = 1;
-        const Soldado = this.add.image(600, 80, imagen3).setOrigin(0, 0).setScale(0.5);
+        const Soldado = this.add.image(600, 180, imagen3).setOrigin(0, 0).setScale(0.5);
         Soldado.depth = 1;
 
         this.sound.stopAll();
         this.Afondo = this.sound.add('Audio_Bat');
         this.Batalla = this.sound.add('Son_Bton_Bat');
         this.Afondo.play();
-        this.Afondo.volume = 0.1;
+        this.Afondo.volume = 1;
 
 
         var numEnemigo = JSON.parse(localStorage.getItem('numEnemigo'));
@@ -51,7 +54,7 @@ export class Batalla extends Phaser.Scene {
 
 
 
-        const vidaContainer = this.add.container(640, 40);
+        const vidaContainer = this.add.container(590, 144);
 
         const fondoBarra = this.add.graphics();
         fondoBarra.fillStyle(0x000000);
@@ -80,10 +83,10 @@ export class Batalla extends Phaser.Scene {
         this.scale.on('resize', function (gameSize) {
             const width = gameSize.width * 0.2;
 
-            vidaContainer.setPosition(width, 40);
+            vidaContainer.setPosition(590, 144);
             fondoBarra.clear();
             fondoBarra.fillStyle(0x000000);
-            fondoBarra.fillRect(0, 0, width, 20);
+            fondoBarra.fillRect(0, 0, width, 24);
             barraColor.clear();
             barraColor.fillStyle(0xff0000);
             barraColor.fillRect(0, 0, (VidaE / vidaMaxima) * width, 20);
@@ -169,14 +172,18 @@ export class Batalla extends Phaser.Scene {
                     div.appendChild(opcion);
                 });
             }
-
             this.Estado = 0;
             const self = this;
             var Disparo = this.sound.add('Disparo');
+            var numPre = 0;
+            var PreCor = 0;
+            var puntaje = JSON.parse(localStorage.getItem("SimonBolivar")).conocimiento;;
             function validarRespuesta() {
                 var respuestaCorrecta = preguntas[preguntaActual].correcta;
                 // Acceder a 'Estado' a través de 'self'
                 if (respuestaSeleccionada === respuestaCorrecta) {
+                    PreCor += 1;
+                    numPre += 1
                     VidaE -= 25;
                     const porcentajeVidaE = (VidaE / vidaMaxima) * 100;
                     const nuevaLongitud = (porcentajeVidaE / 100) * AltoMaximo;
@@ -186,36 +193,47 @@ export class Batalla extends Phaser.Scene {
                     Disparo.play();
                     Enemigos[numEnemigo].vida = VidaE;
                     localStorage.setItem('Enemigo', JSON.stringify(Enemigos));
+                    puntaje += 1;
+                    Personaje.conocimiento = puntaje;
+                    localStorage.setItem("SimonBolivar", JSON.stringify(Personaje));
                     if (VidaE < 1) {
+                        console.log(numEnemigo);
                         self.Estado = 1;
+                        self.Ganador = 'Jugador';
                         Enemigos.splice(numEnemigo, 1);
                         Rutas.splice(numEnemigo, 1);
                         localStorage.setItem('Enemigo', JSON.stringify(Enemigos));
                         localStorage.setItem('Rutas', JSON.stringify(Rutas));
                         Personaje.vida = VidaP;
                         localStorage.setItem("SimonBolivar", JSON.stringify(Personaje));
-                        console.log(Personaje);
                     }
                 } else {
+                    numPre += 1;
                     VidaP -= 25;
+
                     const porcentajeVida = (VidaP / vidaMaxima) * 100;
                     const nuevaLongitudPer = (porcentajeVida / 100) * AltoMaximo;
                     barraColorPer.clear(); // Limpiar la barra de color
                     barraColorPer.fillStyle(0xff0000); // Establecer el color de la barra
                     barraColorPer.fillRect(0, 0, nuevaLongitudPer, 20);
                     Disparo.play();
+                    if (puntaje >= 2) {
+                        puntaje -= 2;
+                        Personaje.conocimiento = puntaje;
+                    }
+                    if (puntaje > 2){
+                        Personaje.conocimiento = 0;
+                    }
+                    localStorage.setItem("SimonBolivar", JSON.stringify(Personaje));
                     if (VidaP < 1) {
                         self.Estado = 1;
-                        localStorage.setItem("SimonBolivar", JSON.stringify({ posX: 157, posY: 947, vida: VidaP }));
+                        self.Ganador = 'Enemigo';
                         const rutasEnemigos = JSON.parse(localStorage.getItem("Rutas"));
-                        const rutaEnemigo = rutasEnemigos[numEnemigo];
                         for (let i = 0; i < rutasEnemigos.length; i++) {
-                            if (rutaEnemigo.length > 2) {
                                 const element = rutasEnemigos[i];
                                 element.splice(0, 1);
-                                localStorage.setItem('Rutas', JSON.stringify(rutasEnemigos));        
-                            }
-                        }          
+                                localStorage.setItem('Rutas', JSON.stringify(rutasEnemigos));
+                        }
                     }
                 }
                 preguntar();
@@ -253,8 +271,15 @@ export class Batalla extends Phaser.Scene {
         if (this.Estado === 1) {
             var Derrota = document.getElementById("con_preguntas");
             Derrota.style.display = "none";
+        }
+        if (this.Ganador === 'Jugador') {
             this.scene.start('Game');
         }
+        if (this.Ganador === 'Enemigo') {
+            this.scene.start('gameOver');
+        }
+
+
 
     }
 

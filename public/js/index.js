@@ -5,12 +5,13 @@ import { MenuScene } from "./menu.js";
 import { CasaFrancisco } from "./CasaFrancisco.js";
 import { Conversacion } from "./conversacion.js";
 import { UI } from "./UI.js";
+import { gameOver } from "./gameOver.js";
 
 var config = {
   type: Phaser.AUTO,
   width: '100%',
   height: '96%',
-  scene: [MenuScene, Game, Batalla, CasaFrancisco, Conversacion, UI],
+  scene: [MenuScene, Game, Batalla, CasaFrancisco, Conversacion, UI, gameOver],
   physics: {
     default: "arcade",
     arcade: {
