@@ -22,6 +22,8 @@ export class Game extends Phaser.Scene {
     this.Aliados = [];
     this.Inicio = 0;
     this.Col = 0;
+    this.Enemigos = JSON.parse(localStorage.getItem("Enemigo"));
+    this.numEnemigo = "";
   }
 
   preload() {
@@ -39,6 +41,7 @@ export class Game extends Phaser.Scene {
     this.load.image('esclavo', './img/SimonBolivar/back-Sheet-batalla.png');
     this.load.image('soldado', './img/enemigoEspañol/front-Sheet-batalla.png');
     this.load.image('colicionador', './img/Colicionador.png');
+    this.load.image('vida', './assets/vida.png');
 
     this.load.audio('Audio_Fon', './assets/Audios/Fondo_Sound.wav');
     this.load.audio('Pasos', './assets/Audios/Pasos.mp3');
@@ -135,7 +138,7 @@ export class Game extends Phaser.Scene {
     this.routes = JSON.parse(localStorage.getItem("Rutas"));
     for (let i = 0; i < this.routes.length; i++) {
       const route = this.routes[i];
-      const enemy = this.physics.add.sprite(route.x, route.y, "infFron").setScale(0.2, 0.2).setSize(70, 70).setOffset(118, 110);
+      const enemy = this.physics.add.sprite(route.x, route.y, "vida").setScale(0.2, 0.2).setSize(70, 70).setOffset(118, 110);
       this.enemigos.add(enemy);
       const path = this.add.path(route[0].x, route[0].y);
       for (let j = 1; j < route.length; j++) {
@@ -214,106 +217,104 @@ export class Game extends Phaser.Scene {
   update() {
     this.cameras.main.startFollow(this.personaje);
     this.minimapCamera.startFollow(this.personaje);
-    if (JSON.parse(localStorage.getItem("SimonBolivar")).estado === 0) {
+    const playerX = this.personaje.x;
+
+    if (this.scene.key === "Game") {
 
       const playerX = this.personaje.x;
+      const playerY = this.personaje.y;
+      const followThreshold = 150; // Seguimiento
+      this.quienes = [];
 
-      if (this.scene.key === "Game") {
+      this.enemigos.getChildren().forEach((enemy) => {
+        const enemyX = enemy.x;
+        const enemyY = enemy.y;
+        const t = enemy.t;
+        const point = enemy.path.getPoint(t);
+        const distance = Phaser.Math.Distance.Between(playerX, playerY, enemyX, enemyY);
 
-        const playerX = this.personaje.x;
-        const playerY = this.personaje.y;
-        const followThreshold = 150; // Seguimiento
-        this.quienes = [];
-
-        this.enemigos.getChildren().forEach((enemy) => {
-          const enemyX = enemy.x;
-          const enemyY = enemy.y;
-          const t = enemy.t;
-          const point = enemy.path.getPoint(t);
-          const distance = Phaser.Math.Distance.Between(playerX, playerY, enemyX, enemyY);
-
-          if (distance < followThreshold) {
-            // El enemigo sigue al personaje
-            const angle = Phaser.Math.Angle.Between(enemyX, enemyY, playerX, playerY);
-            const speed = 180; // Ajusta la velocidad de seguimiento
-            const quien = this.enemigos.getChildren().indexOf(enemy);
-            this.quienes.push(quien);
-
-
-            enemy.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
-
-            // Actualiza la animación en función de la dirección del movimiento
-            if (Math.abs(enemyX - playerX) > Math.abs(enemyY - playerY)) {
-              if (enemyX > playerX) {
-                enemy.anims.play('eneLeftAnim', true);
-              } else {
-                enemy.anims.play('eneRightAnim', true);
-              }
+        if (distance < followThreshold) {
+          this.numEnemigo = this.enemigos.getChildren().indexOf(enemy);
+          localStorage.setItem('numEnemigo', this.numEnemigo);
+          // Actualiza la animación en función de la dirección del movimiento
+          if (Math.abs(enemyX - playerX) > Math.abs(enemyY - playerY)) {
+            if (enemyX > playerX) {
+              enemy.anims.play('eneLeftAnim', true);
             } else {
-              if (enemyY > playerY) {
-                enemy.anims.play('eneBackAnim', true);
-              } else {
-                enemy.anims.play('eneFrontAnim', true);
-              }
+              enemy.anims.play('eneRightAnim', true);
             }
           } else {
-            if (point) {
-              // Determinar la dirección del movimiento
-              const nextPoint = enemy.path.getPoint(t + 0.001); // Usar un pequeño incremento en t para obtener el siguiente punto
-
-              if (nextPoint) {
-                if (point.x === nextPoint.x || point.y === nextPoint.y) {
-                  if (point.x < nextPoint.x) {
-                    enemy.anims.play('eneRightAnim', true);
-                  } else if (point.x > nextPoint.x) {
-                    enemy.anims.play('eneLeftAnim', true);
-                  }
-                } else {
-                  if (point.y < nextPoint.y) {
-                    enemy.anims.play('eneFrontAnim', true);
-                  } else if (point.y > nextPoint.y) {
-                    enemy.anims.play('eneBackAnim', true);
-                  }
-                }
-                enemy.setPosition(point.x, point.y);
-
-              }
-
-
-            }
-
-            enemy.t += 0.001; // Puedes ajustar este valor para controlar la velocidad de movimiento de los enemigos
-            if (enemy.t > 1) {
-              enemy.t = 0; // Reiniciar el tiempo cuando se completa la ruta  
+            if (enemyY > playerY) {
+              enemy.anims.play('eneBackAnim', true);
+            } else {
+              enemy.anims.play('eneFrontAnim', true);
             }
           }
 
+          // El enemigo sigue al personaje
+          const angle = Phaser.Math.Angle.Between(enemyX, enemyY, playerX, playerY);
+          const speed = 180; // Ajusta la velocidad de seguimiento
+          const quien = this.enemigos.getChildren().indexOf(enemy);
+          this.quienes.push(quien);
 
-        });
+
+          enemy.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
 
 
-      }
+        } else {
+          if (point) {
+            // Determinar la dirección del movimiento
+            const nextPoint = enemy.path.getPoint(t + 0.01); // Usar un pequeño incremento en t para obtener el siguiente punto
 
-      let { posX, posY } = localStorage.getItem("SimonBolivar")
+            if (nextPoint) {
+              if (point.x === nextPoint.x || point.y === nextPoint.y) {
+                if (point.x < nextPoint.x) {
+                  enemy.anims.play('eneRightAnim', true);
+                } else if (point.x > nextPoint.x) {
+                  enemy.anims.play('eneLeftAnim', true);
+                }
+              } else {
+                if (point.y < nextPoint.y) {
+                  enemy.anims.play('eneFrontAnim', true);
+                } else if (point.y > nextPoint.y) {
+                  enemy.anims.play('eneBackAnim', true);
+                }
+              }
+              enemy.setPosition(point.x, point.y);
 
-      this.physics.add.collider(this.personaje, this.colicionador, (personaje, colicionador) => {
-        this.scene.stop('game');
-        this.scene.start('CasaFrancisco');
-        this.enemigos.getChildren().forEach((enemy, index) => {
-          const posX = enemy.x;
-          const posY = enemy.y;
+            }
+          }
+          this.numEnemigo = this.enemigos.getChildren().indexOf(enemy);
 
-          const rutaEnemigo1 = this.routes[index];
-          const objeto3Enemigo1 = rutaEnemigo1[2];
-          objeto3Enemigo1.x = enemy.x;
-          objeto3Enemigo1.y = enemy.y;
-
-          localStorage.setItem('Rutas', JSON.stringify(this.routes));
-        });
+            enemy.t += 0.001;
+          if (enemy.t > 1) {
+            enemy.t = 0; // Reiniciar el tiempo cuando se completa la ruta  
+          }
+        }
       });
+    }
 
-      this.physics.add.collider(this.personaje, this.enemigos, (personaje, enemigo) => {
-        if (this.Col === 0) {
+    let { posX, posY } = localStorage.getItem("SimonBolivar")
+
+    this.physics.add.collider(this.personaje, this.colicionador, (personaje, colicionador) => {
+      this.scene.stop('game');
+      this.scene.start('CasaFrancisco');
+      this.enemigos.getChildren().forEach((enemy, index) => {
+        const posX = enemy.x;
+        const posY = enemy.y;
+
+        const rutaEnemigo1 = this.routes[index];
+        const objeto3Enemigo1 = rutaEnemigo1[2];
+        objeto3Enemigo1.x = enemy.x;
+        objeto3Enemigo1.y = enemy.y;
+
+        localStorage.setItem('Rutas', JSON.stringify(this.routes));
+      });
+    });
+
+    this.physics.add.collider(this.personaje, this.enemigos, (personaje, enemigo) => {
+      if (this.Col === 0) {
+        this.numEnemigo = this.enemigos.getChildren().indexOf(enemigo);
           this.scene.stop('game')
           this.scene.start('Batalla');
           this.numEnemigo = this.enemigos.getChildren().indexOf(enemigo);
@@ -330,7 +331,6 @@ export class Game extends Phaser.Scene {
               const posX = enemy.x;
               const posY = enemy.y;
               const newInicio = { x: posX, y: posY };
-              console.log(newInicio);
               element.unshift(newInicio);
               if (element.length < 5) {
                 localStorage.setItem('Rutas', JSON.stringify(ruta));
@@ -338,78 +338,77 @@ export class Game extends Phaser.Scene {
             }
 
           });
-        }
-
-      });
-
-
-
-      if (this.Ultimo === 2) {
-        if (this.Reproducir === 1) {
-          this.Afondo.play();
-          this.Afondo.setVolume(0.3);
-          this.Afondo.setSeek(1, 5);
-          this.Reproducir = 2;
-        }
-        this.fondo.stop();
+        
       }
 
-      if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).isDown) {
-        if (this.Ultimo === 1) {
-          localStorage.setItem("SimonBolivar", JSON.stringify({ posX: this.personaje.x, posY: this.personaje.y }));
-          this.scene.start('MenuScene');
-        }
+    });
+
+
+
+    if (this.Ultimo === 2) {
+      if (this.Reproducir === 1) {
+        this.Afondo.play();
+        this.Afondo.setVolume(0.3);
+        this.Afondo.setSeek(1, 5);
+        this.Reproducir = 2;
       }
+      this.fondo.stop();
+    }
 
-      //MOVIMIENTO DEL PERSONAJE.
-      const keyA = this.input.keyboard.addKey('A');
-      const keyD = this.input.keyboard.addKey('D');
-      const keyW = this.input.keyboard.addKey('W');
-      const keyS = this.input.keyboard.addKey('S');
-      this.personaje.setVelocity(0);
-
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).isDown) {
       if (this.Ultimo === 1) {
-        if (keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown) {
-          if (keyD.isDown && keyW.isDown) {
-            this.personaje.setVelocityX(150);
-            this.personaje.setVelocityY(-150);
-            this.personaje.anims.play('arriba', true);
-            this.PasosAr.stop();
-          } else if (keyA.isDown && keyW.isDown) {
-            this.personaje.setVelocityX(-150);
-            this.personaje.setVelocityY(-150);
-            this.personaje.anims.play('arriba', true);
-            this.PasosAr.stop();
-          } else if (keyD.isDown && keyS.isDown) {
-            this.personaje.setVelocityX(150);
-            this.personaje.setVelocityY(150);
-            this.personaje.anims.play('abajo', true);
-          } else if (keyA.isDown && keyS.isDown) {
-            this.personaje.setVelocityX(-150);
-            this.personaje.setVelocityY(150);
-            this.personaje.anims.play('abajo', true);
-          } else if (keyD.isDown) {
-            this.personaje.setVelocityX(150);
-            this.personaje.anims.play('derecha', true);
-          } else if (keyW.isDown) {
-            this.personaje.setVelocityY(-150);
-            this.personaje.anims.play('arriba', true);
-          } else if (keyS.isDown) {
-            this.personaje.setVelocityY(150);
-            this.personaje.anims.play('abajo', true);
-          } else if (keyA.isDown) {
-            this.personaje.setVelocityX(-150);
-            this.personaje.anims.play('izquierda', true);
-          }
-        } else if (!(keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown)) {
-          this.PasosD.play();
-          this.personaje.anims.stop();
+        localStorage.setItem("SimonBolivar", JSON.stringify({ posX: this.personaje.x, posY: this.personaje.y }));
+        this.scene.start('MenuScene');
+      }
+    }
+
+    //MOVIMIENTO DEL PERSONAJE.
+    const keyA = this.input.keyboard.addKey('A');
+    const keyD = this.input.keyboard.addKey('D');
+    const keyW = this.input.keyboard.addKey('W');
+    const keyS = this.input.keyboard.addKey('S');
+    this.personaje.setVelocity(0);
+
+    if (this.Ultimo === 1) {
+      if (keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown) {
+        if (keyD.isDown && keyW.isDown) {
+          this.personaje.setVelocityX(150);
+          this.personaje.setVelocityY(-150);
+          this.personaje.anims.play('arriba', true);
+          this.PasosAr.stop();
+        } else if (keyA.isDown && keyW.isDown) {
+          this.personaje.setVelocityX(-150);
+          this.personaje.setVelocityY(-150);
+          this.personaje.anims.play('arriba', true);
+          this.PasosAr.stop();
+        } else if (keyD.isDown && keyS.isDown) {
+          this.personaje.setVelocityX(150);
+          this.personaje.setVelocityY(150);
+          this.personaje.anims.play('abajo', true);
+        } else if (keyA.isDown && keyS.isDown) {
+          this.personaje.setVelocityX(-150);
+          this.personaje.setVelocityY(150);
+          this.personaje.anims.play('abajo', true);
+        } else if (keyD.isDown) {
+          this.personaje.setVelocityX(150);
+          this.personaje.anims.play('derecha', true);
+        } else if (keyW.isDown) {
+          this.personaje.setVelocityY(-150);
+          this.personaje.anims.play('arriba', true);
+        } else if (keyS.isDown) {
+          this.personaje.setVelocityY(150);
+          this.personaje.anims.play('abajo', true);
+        } else if (keyA.isDown) {
+          this.personaje.setVelocityX(-150);
+          this.personaje.anims.play('izquierda', true);
         }
-      } else {
+      } else if (!(keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown)) {
         this.PasosD.play();
         this.personaje.anims.stop();
       }
-
+    } else {
+      this.PasosD.play();
+      this.personaje.anims.stop();
     }
 
   }

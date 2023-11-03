@@ -1,7 +1,6 @@
 export class UI extends Phaser.Scene {
     constructor() {
         super({ key: 'UI' });
-        this.Vida = "";
     }
 
     preload() {
@@ -14,6 +13,7 @@ export class UI extends Phaser.Scene {
     create() {
         const personaje = JSON.parse(localStorage.getItem("SimonBolivar"));
         this.Vida = personaje.vida;
+        this.Conocimiento = personaje.conocimiento;
         const camera = this.cameras.main;
 
         const cameraWidth = camera.width;
@@ -39,7 +39,7 @@ export class UI extends Phaser.Scene {
 
         const barraColorCon = this.add.graphics();
         barraColorCon.fillStyle(0x50CEE8);
-        barraColorCon.fillRect(220, 0, (50 / 100) * 200, 10);
+        barraColorCon.fillRect(220, 0, (this.Conocimiento / 100) * 200, 10);
         conocimientoContainerPer.add(barraColorCon);
 
         const Vida = this.add.image(x + 200, y + 25, 'corazon');

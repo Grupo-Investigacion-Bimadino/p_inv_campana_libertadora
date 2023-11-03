@@ -58,18 +58,23 @@ export class MenuScene extends Phaser.Scene {
         const buttonNew = this.add.sprite(650, 100, "NewPar")
             .setScale(0.25)
             .setInteractive()
+            .on('pointerover', function () {
+                document.body.style.cursor = 'pointer';
+            })
+            .on('pointerout', function () {
+                document.body.style.cursor = 'default';
+            })
             .on("pointerup", () => {
+                document.body.style.cursor = 'default';
                 localStorage.removeItem('SimonBolivar');
                 localStorage.removeItem('Enemigo');
                 localStorage.removeItem('numEnemigo');
                 localStorage.removeItem('Rutas');
                 localStorage.removeItem('Aliados');
-
                 localStorage.setItem("Rutas", JSON.stringify(this.rutas));
                 this.Fon.stop();
                 this.scene.start("Conversacion");
             });
-
 
         this.tweens.add({
             targets: buttonNew,
@@ -85,6 +90,12 @@ export class MenuScene extends Phaser.Scene {
             .setScale(0.25)
             .setInteractive()
             .on("pointerup", () => {
+            })
+            .on('pointerover', function () {
+                document.body.style.cursor = 'pointer';
+            })
+            .on('pointerout', function () {
+                document.body.style.cursor = 'default';
             });
 
         this.tweens.add({
@@ -102,6 +113,12 @@ export class MenuScene extends Phaser.Scene {
             .setInteractive()
             .on("pointerup", () => {
                 this.scene.start("creditos");
+            })
+            .on('pointerover', function () {
+                document.body.style.cursor = 'pointer';
+            })
+            .on('pointerout', function () {
+                document.body.style.cursor = 'default';
             });
 
         this.tweens.add({
