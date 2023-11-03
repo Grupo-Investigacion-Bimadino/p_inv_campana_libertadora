@@ -177,6 +177,7 @@ export class Batalla extends Phaser.Scene {
             var Disparo = this.sound.add('Disparo');
             var numPre = 0;
             var PreCor = 0;
+            
             var puntaje = JSON.parse(localStorage.getItem("SimonBolivar")).conocimiento;;
             function validarRespuesta() {
                 var respuestaCorrecta = preguntas[preguntaActual].correcta;
