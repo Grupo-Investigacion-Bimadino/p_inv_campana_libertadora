@@ -1,11 +1,11 @@
 import { Puntos } from "./preguntas.js";
-import { Aliados } from "./preguntas.js";
+import { PuntosA } from "./preguntas.js";
 
 export class Game extends Phaser.Scene {
   Ultimo;
   Reproducir;
   puntos = Puntos();
-  aliados = Aliados();
+  puntosA = PuntosA();
   numEnemigo;
 
   constructor() {
@@ -14,15 +14,15 @@ export class Game extends Phaser.Scene {
     this.backgroundImage;
     this.textVisible = true;
     this.velocity = 200;
+    this.velocity = 200;
     this.wrapRect;
     this.Ultimo = 1;
     this.Reproducir = 1;
     this.esc = 1;
     this.routes = [];
-    this.Aliados = [];
+    this.routesA = [];
     this.Inicio = 0;
     this.Col = 0;
-    this.Enemigos = JSON.parse(localStorage.getItem("Enemigo"));
     this.numEnemigo = "";
   }
 
@@ -41,20 +41,27 @@ export class Game extends Phaser.Scene {
     this.load.image('esclavo', './img/SimonBolivar/back-Sheet-batalla.png');
     this.load.image('soldado', './img/enemigoEspañol/front-Sheet-batalla.png');
     this.load.image('colicionador', './img/Colicionador.png');
-    this.load.image('vida', './assets/vida.png');
 
     this.load.audio('Audio_Fon', './assets/Audios/Fondo_Sound.wav');
     this.load.audio('Pasos', './assets/Audios/Pasos.mp3');
     this.load.audio('Audio_Bat', './assets/Audios/Batalla.mp3');
     this.load.audio('Son_Bton_Bat', './assets/Audios/Son_Boton_Bat.mp3');
+
     this.load.spritesheet('PerFron', './img/SimonBolivar/front-Sheet.png', { frameWidth: 320, frameHeight: 320 });
     this.load.spritesheet('PerEsp', './img/SimonBolivar/back-Sheet.png', { frameWidth: 320, frameHeight: 320 });
     this.load.spritesheet('PerDer', './img/SimonBolivar/right-Sheet.png', { frameWidth: 320, frameHeight: 320 });
     this.load.spritesheet('PerIzq', './img/SimonBolivar/left-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+
     this.load.spritesheet('eneFron', './img/enemigoEspañol/front-Sheet.png', { frameWidth: 320, frameHeight: 320 });
     this.load.spritesheet('eneEsp', './img/enemigoEspañol/back-Sheet.png', { frameWidth: 320, frameHeight: 320 });
     this.load.spritesheet('eneDer', './img/enemigoEspañol/right-Sheet.png', { frameWidth: 320, frameHeight: 320 });
     this.load.spritesheet('eneIzq', './img/enemigoEspañol/left-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+
+    this.load.spritesheet('CamFron', './img/Campesino/front-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+    this.load.spritesheet('CamEsp', './img/Campesino/back-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+    this.load.spritesheet('CamDer', './img/Campesino/right-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+    this.load.spritesheet('CamIzq', './img/Campesino/left-Sheet.png', { frameWidth: 320, frameHeight: 320 });
+
     this.load.spritesheet('infFron', './img/Informante/front-Sheet.png', { frameWidth: 320, frameHeight: 320 });
 
   }
@@ -79,8 +86,11 @@ export class Game extends Phaser.Scene {
     if (!localStorage.getItem("Rutas")) {
       localStorage.setItem("Rutas", JSON.stringify(this.routes));
     }
-    if (!localStorage.getItem("Aliados")) {
-      localStorage.setItem("Aliados", JSON.stringify(this.aliados));
+    if (!localStorage.getItem("Aliado")) {
+      localStorage.setItem("Aliado", JSON.stringify(this.puntosA));
+    }
+    if (!localStorage.getItem("RutasA")) {
+      localStorage.setItem("RutasA", JSON.stringify(this.routesA));
     }
 
     this.sound.stopAll();
@@ -127,18 +137,18 @@ export class Game extends Phaser.Scene {
 
 
     // // Establecer colisión con todos los tiles excepto los especificados en nonCollisionTiles
-    capaArboles.setCollision([1184, 1686, 1704, 1706, 1864, 1865, 4033, 4034, 4035, 4113, 4141, 4142, 4143, 4149, , 4193, 4194, 4195, 4115]);
-    capaPasto.setCollision([232]);
+    capaArboles.setCollision([278, 357, 359, 2848,2849,2850,2851,2852, 491, 518, 1184, 1686, 1704, 1706, 1864, 1865, 2852, 4033, 4034, 4035, 4113, 4141, 4142, 4143, 4149, , 4193, 4194, 4195, 4115]);
+    capaPasto.setCollision([232, 517,518,518,518,518,518,518,518,518,518,518,518,518,518,518,519]);
 
-    this.cameras.main.setBounds(0, 0, 3200, 3200);
+    this.cameras.main.setBounds(0, 0, 4832, 3232);
 
     this.wrapRect = new Phaser.Geom.Rectangle(0, 0, 1367, 1239);
-
+    const enemySpeed = 2;
     this.enemigos = this.physics.add.group();
     this.routes = JSON.parse(localStorage.getItem("Rutas"));
     for (let i = 0; i < this.routes.length; i++) {
       const route = this.routes[i];
-      const enemy = this.physics.add.sprite(route.x, route.y, "vida").setScale(0.2, 0.2).setSize(70, 70).setOffset(118, 110);
+      const enemy = this.physics.add.sprite(route.x, route.y).setScale(0.2, 0.2).setSize(70, 70).setOffset(118, 110);
       this.enemigos.add(enemy);
       const path = this.add.path(route[0].x, route[0].y);
       for (let j = 1; j < route.length; j++) {
@@ -146,20 +156,22 @@ export class Game extends Phaser.Scene {
       }
       enemy.path = path;
       enemy.t = 0; // Inicializar el tiempo de la ruta del enemigo
+      enemy.speed = enemySpeed; // Establecer la velocidad constante para el enemigo
     }
 
-    this.aliadosgrupo = this.physics.add.group();
-    this.Aliados = JSON.parse(localStorage.getItem("Aliados"));
-    for (let i = 0; i < this.Aliados.length; i++) {
-      const aliado = this.Aliados[i];
-      const aly = this.physics.add.sprite(aliado.x, aliado.y, "infFron").setScale(0.2, 0.2).setSize(70, 70).setOffset(128, 200);
-      this.aliadosgrupo.add(aly);
-      // const path = this.add.path(route[0].x, route[0].y);
-      // for (let j = 1; j < route.length; j++) {
-      //   path.lineTo(route[j].x, route[j].y);
-      // }
-      // enemy.path = path;
-      // enemy.t = 0; // Inicializar el tiempo de la ruta del enemigo
+    this.aliados = this.physics.add.group();
+    this.routesA = JSON.parse(localStorage.getItem("RutasA"));
+    for (let i = 0; i < this.routesA.length; i++) {
+      const routeA = this.routesA[i];
+      const ally = this.physics.add.sprite(routeA.x, routeA.y).setScale(0.2, 0.2).setSize(70, 70).setOffset(118, 110);
+      this.aliados.add(ally);
+      const path = this.add.path(routeA[0].x, routeA[0].y);
+      for (let j = 1; j < routeA.length; j++) {
+        path.lineTo(routeA[j].x, routeA[j].y);
+      }
+      ally.path = path;
+      ally.t = 0; // Inicializar el tiempo de la ruta del aliado
+      ally.speed = 1; // Establecer la velocidad constante para el aliado
     }
 
     /// debugger;
@@ -196,11 +208,19 @@ export class Game extends Phaser.Scene {
     this.enemigos.getChildren().forEach((enemy) => {
       enemy.depth = 1;
     });
+    this.aliados.getChildren().forEach((Aly) => {
+      Aly.depth = 1;
+    });
 
     this.anims.create({ key: 'eneLeftAnim', frames: this.anims.generateFrameNumbers('eneIzq', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
     this.anims.create({ key: 'eneRightAnim', frames: this.anims.generateFrameNumbers('eneDer', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
     this.anims.create({ key: 'eneFrontAnim', frames: this.anims.generateFrameNumbers('eneFron', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
     this.anims.create({ key: 'eneBackAnim', frames: this.anims.generateFrameNumbers('eneEsp', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
+
+    this.anims.create({ key: 'camLeftAnim', frames: this.anims.generateFrameNumbers('CamIzq', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
+    this.anims.create({ key: 'camRightAnim', frames: this.anims.generateFrameNumbers('CamDer', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
+    this.anims.create({ key: 'camFrontAnim', frames: this.anims.generateFrameNumbers('CamFron', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
+    this.anims.create({ key: 'camBackAnim', frames: this.anims.generateFrameNumbers('CamEsp', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
 
     this.colicionador = this.physics.add
       .sprite(2540, 808, "colicionador")
@@ -223,8 +243,42 @@ export class Game extends Phaser.Scene {
 
       const playerX = this.personaje.x;
       const playerY = this.personaje.y;
-      const followThreshold = 150; // Seguimiento
+      // console.log(" X: " + playerX, " Y: " + playerY);
+      const followThreshold = 100; // Seguimiento 150
       this.quienes = [];
+
+      this.aliados.getChildren().forEach((ally) => {
+        const point = ally.path.getPoint(ally.t);
+        ally.setPosition(point.x, point.y);
+
+        if (point) {
+          // Determinar la dirección del movimiento
+          const nextPoint = ally.path.getPoint(ally.t + 0.01); // Usar un pequeño incremento en t para obtener el siguiente punto
+
+          if (nextPoint) {
+            if (point.x === nextPoint.x || point.y === nextPoint.y) {
+              if (point.x < nextPoint.x) {
+                ally.anims.play('camRightAnim', true);
+              } else if (point.x > nextPoint.x) {
+                ally.anims.play('camLeftAnim', true);
+              }
+            } else {
+              if (point.y < nextPoint.y) {
+                ally.anims.play('camFrontAnim', true);
+              } else if (point.y > nextPoint.y) {
+                ally.anims.play('camBackAnim', true);
+              }
+            }
+            ally.setPosition(point.x, point.y);
+
+          }
+        }
+        ally.t += ally.speed / ally.path.getLength();
+
+        if (ally.t > 1) {
+          ally.t = 0; // Reiniciar el tiempo cuando se completa la ruta
+        }
+      });
 
       this.enemigos.getChildren().forEach((enemy) => {
         const enemyX = enemy.x;
@@ -286,7 +340,7 @@ export class Game extends Phaser.Scene {
           }
           this.numEnemigo = this.enemigos.getChildren().indexOf(enemy);
 
-            enemy.t += 0.001;
+          enemy.t += enemy.speed / enemy.path.getLength();
           if (enemy.t > 1) {
             enemy.t = 0; // Reiniciar el tiempo cuando se completa la ruta  
           }
@@ -304,7 +358,7 @@ export class Game extends Phaser.Scene {
         const posY = enemy.y;
 
         const rutaEnemigo1 = this.routes[index];
-        const objeto3Enemigo1 = rutaEnemigo1[2];
+        const objeto3Enemigo1 = rutaEnemigo1[4];
         objeto3Enemigo1.x = enemy.x;
         objeto3Enemigo1.y = enemy.y;
 
@@ -315,30 +369,30 @@ export class Game extends Phaser.Scene {
     this.physics.add.collider(this.personaje, this.enemigos, (personaje, enemigo) => {
       if (this.Col === 0) {
         this.numEnemigo = this.enemigos.getChildren().indexOf(enemigo);
-          this.scene.stop('game')
-          this.scene.start('Batalla');
-          this.numEnemigo = this.enemigos.getChildren().indexOf(enemigo);
-          localStorage.setItem('numEnemigo', this.numEnemigo);
-          const Per = JSON.parse(localStorage.getItem('SimonBolivar'))
-          Per.posX = this.personaje.x;
-          Per.posY = this.personaje.y;
-          localStorage.setItem('SimonBolivar', JSON.stringify(Per));
-          const ruta = JSON.parse(localStorage.getItem('Rutas'))
-          console.log(this.quienes);
-          this.enemigos.getChildren().forEach((enemy) => {
-            for (let i = 0; i < this.quienes.length; i++) {
-              const element = ruta[i];
-              const posX = enemy.x;
-              const posY = enemy.y;
-              const newInicio = { x: posX, y: posY };
-              element.unshift(newInicio);
-              if (element.length < 5) {
-                localStorage.setItem('Rutas', JSON.stringify(ruta));
-              }
+        this.scene.stop('game')
+        this.scene.start('Batalla');
+        this.numEnemigo = this.enemigos.getChildren().indexOf(enemigo);
+        localStorage.setItem('numEnemigo', this.numEnemigo);
+        const Per = JSON.parse(localStorage.getItem('SimonBolivar'))
+        Per.posX = this.personaje.x;
+        Per.posY = this.personaje.y;
+        localStorage.setItem('SimonBolivar', JSON.stringify(Per));
+        const ruta = JSON.parse(localStorage.getItem('Rutas'))
+       
+        this.enemigos.getChildren().forEach((enemy) => {
+          for (let i = 0; i < this.quienes.length; i++) {
+            const element = ruta[i];
+            const posX = enemy.x;
+            const posY = enemy.y;
+            const newInicio = { x: posX, y: posY };
+            element.unshift(newInicio);
+            if (element.length < 5) {
+              localStorage.setItem('Rutas', JSON.stringify(ruta));
             }
+          }
 
-          });
-        
+        });
+
       }
 
     });
@@ -367,42 +421,44 @@ export class Game extends Phaser.Scene {
     const keyD = this.input.keyboard.addKey('D');
     const keyW = this.input.keyboard.addKey('W');
     const keyS = this.input.keyboard.addKey('S');
+    const cursors = this.input.keyboard.createCursorKeys();
     this.personaje.setVelocity(0);
+    
 
     if (this.Ultimo === 1) {
-      if (keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown) {
-        if (keyD.isDown && keyW.isDown) {
+      if ((keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown || cursors.right.isDown || cursors.up.isDown || cursors.left.isDown || cursors.down.isDown)) {
+        if ((keyD.isDown || cursors.right.isDown) && (keyW.isDown || cursors.up.isDown)) {
           this.personaje.setVelocityX(150);
           this.personaje.setVelocityY(-150);
           this.personaje.anims.play('arriba', true);
           this.PasosAr.stop();
-        } else if (keyA.isDown && keyW.isDown) {
+        } else if ((keyA.isDown || cursors.left.isDown) && (keyW.isDown || cursors.up.isDown)) {
           this.personaje.setVelocityX(-150);
           this.personaje.setVelocityY(-150);
           this.personaje.anims.play('arriba', true);
           this.PasosAr.stop();
-        } else if (keyD.isDown && keyS.isDown) {
+        } else if ((keyD.isDown || cursors.right.isDown) && (keyS.isDown || cursors.down.isDown)) {
           this.personaje.setVelocityX(150);
           this.personaje.setVelocityY(150);
           this.personaje.anims.play('abajo', true);
-        } else if (keyA.isDown && keyS.isDown) {
+        } else if ((keyA.isDown || cursors.left.isDown) && (keyS.isDown || cursors.down.isDown)) {
           this.personaje.setVelocityX(-150);
           this.personaje.setVelocityY(150);
           this.personaje.anims.play('abajo', true);
-        } else if (keyD.isDown) {
+        } else if (keyD.isDown || cursors.right.isDown) {
           this.personaje.setVelocityX(150);
           this.personaje.anims.play('derecha', true);
-        } else if (keyW.isDown) {
+        } else if (keyW.isDown || cursors.up.isDown) {
           this.personaje.setVelocityY(-150);
           this.personaje.anims.play('arriba', true);
-        } else if (keyS.isDown) {
+        } else if (keyS.isDown || cursors.down.isDown) {
           this.personaje.setVelocityY(150);
           this.personaje.anims.play('abajo', true);
-        } else if (keyA.isDown) {
+        } else if (keyA.isDown || cursors.left.isDown) {
           this.personaje.setVelocityX(-150);
           this.personaje.anims.play('izquierda', true);
         }
-      } else if (!(keyD.isDown || keyW.isDown || keyA.isDown || keyS.isDown)) {
+      } else {
         this.PasosD.play();
         this.personaje.anims.stop();
       }

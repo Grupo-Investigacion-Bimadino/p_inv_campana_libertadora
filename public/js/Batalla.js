@@ -121,6 +121,7 @@ export class Batalla extends Phaser.Scene {
                 fill: "#F700FF",
             });
             var opciones = [];
+            var timer;
 
             function mezclarRespuestas(respuestas) {
                 // Crear un array con los índices de las respuestas
@@ -164,12 +165,25 @@ export class Batalla extends Phaser.Scene {
                 respuestasMezcladas.forEach((respuesta, index) => {
                     const opcion = document.createElement("a");
                     opcion.classList.add("Op_res"); //AGREGAR ESTILOS
+                    opcion.classList.remove("correcta");
+                    opcion.classList.remove("incorrecta");
+                    opcion.classList.remove("selecion");
+                    opcion.classList.add("fondo");
                     opcion.textContent = respuesta;
                     opcion.addEventListener("click", function () {
                         respuestaSeleccionada = respuesta;
-                        validarRespuesta();
+                        self.time.delayedCall(3000, validarRespuesta, [], self);
                     });
                     div.appendChild(opcion);
+                });
+
+                document.querySelectorAll('.Op_res').forEach(function (opcion) {
+                    opcion.addEventListener('click', function () {
+                        opcion.classList.remove("correcta");
+                        opcion.classList.remove("incorrecta");
+                        opcion.classList.remove("fondo");
+                        opcion.classList.add("seleccion");
+                    });
                 });
             }
             this.Estado = 0;
@@ -178,11 +192,26 @@ export class Batalla extends Phaser.Scene {
             var numPre = 0;
             var PreCor = 0;
             var Eliminarla = "prueba";
-            var puntaje = JSON.parse(localStorage.getItem("SimonBolivar")).conocimiento;;
+            var puntaje = JSON.parse(localStorage.getItem("SimonBolivar")).conocimiento;
+
+            const PuntoTotal = JSON.parse(localStorage.getItem("PuntoTotal"));
+            var punto = JSON.parse(localStorage.getItem("PuntoTotal")).Puntos;
+
+
             function validarRespuesta() {
                 var respuestaCorrecta = preguntas[preguntaActual].correcta;
                 // Acceder a 'Estado' a través de 'self'
+
+
                 if (respuestaSeleccionada === respuestaCorrecta) {
+                    div.querySelectorAll(".Op_res").forEach(opcion => {
+                        if (opcion.textContent === respuestaSeleccionada) {
+                            opcion.classList.remove("selecion");
+                            opcion.classList.remove("incorrecta");
+                            opcion.classList.add("correcta");
+                        }
+                    });
+
                     PreCor += 1;
                     numPre += 1
                     VidaE -= 25;
@@ -194,8 +223,11 @@ export class Batalla extends Phaser.Scene {
                     Disparo.play();
                     Enemigos[numEnemigo].vida = VidaE;
                     localStorage.setItem('Enemigo', JSON.stringify(Enemigos));
-                    puntaje += 1;
+                    puntaje += 4;
+                    punto += 4;
+                    PuntoTotal.Puntos = punto;
                     Personaje.conocimiento = puntaje;
+                    localStorage.setItem("PuntoTotal", JSON.stringify(PuntoTotal));
                     localStorage.setItem("SimonBolivar", JSON.stringify(Personaje));
                     if (VidaE < 1) {
                         console.log(numEnemigo);
@@ -209,6 +241,17 @@ export class Batalla extends Phaser.Scene {
                         localStorage.setItem("SimonBolivar", JSON.stringify(Personaje));
                     }
                 } else {
+                    div.querySelectorAll(".Op_res").forEach(opcion => {
+                        if (opcion.textContent === respuestaSeleccionada) {
+                            opcion.classList.remove("selecion");
+                            opcion.classList.remove("correcta");
+                            opcion.classList.add("incorrecta");
+                        }
+                        if (opcion.textContent === respuestaCorrecta) {
+                            opcion.classList.add("correcta");
+                        }
+                    });
+
                     numPre += 1;
                     VidaP -= 25;
 
@@ -218,26 +261,29 @@ export class Batalla extends Phaser.Scene {
                     barraColorPer.fillStyle(0xff0000); // Establecer el color de la barra
                     barraColorPer.fillRect(0, 0, nuevaLongitudPer, 20);
                     Disparo.play();
-                    if (puntaje >= 2) {
-                        puntaje -= 2;
+                    if (puntaje >= 4) {
+                        puntaje -= 4;
                         Personaje.conocimiento = puntaje;
+                    };
+                    console.log(punto);
+                    if (punto >= 4) {
+                        punto -= 4;
+                        PuntoTotal.Puntos = punto;
                     }
-                    if (puntaje > 2){
-                        Personaje.conocimiento = 0;
-                    }
+                    localStorage.setItem("PuntoTotal", JSON.stringify(PuntoTotal));
                     localStorage.setItem("SimonBolivar", JSON.stringify(Personaje));
                     if (VidaP < 1) {
                         self.Estado = 1;
                         self.Ganador = 'Enemigo';
                         const rutasEnemigos = JSON.parse(localStorage.getItem("Rutas"));
                         for (let i = 0; i < rutasEnemigos.length; i++) {
-                                const element = rutasEnemigos[i];
-                                element.splice(0, 1);
-                                localStorage.setItem('Rutas', JSON.stringify(rutasEnemigos));
+                            const element = rutasEnemigos[i];
+                            element.splice(0, 1);
+                            localStorage.setItem('Rutas', JSON.stringify(rutasEnemigos));
                         }
                     }
                 }
-                preguntar();
+                self.time.delayedCall(3000, preguntar, [], self);
             }
 
             // Crear opciones de respuesta

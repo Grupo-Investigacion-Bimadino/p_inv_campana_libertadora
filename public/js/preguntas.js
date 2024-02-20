@@ -232,6 +232,13 @@ export function Puntos() {
   var puntos = [
     { nivel: 1, tipo: "eneFron", vida: 100},
     { nivel: 1, tipo: "eneFron", vida: 100},
+    { nivel: 1, tipo: "eneFron", vida: 100},
+    { nivel: 1, tipo: "eneFron", vida: 100},
+    { nivel: 1, tipo: "eneFron", vida: 100},
+    { nivel: 1, tipo: "eneFron", vida: 100},
+    { nivel: 1, tipo: "eneFron", vida: 100},
+    { nivel: 1, tipo: "eneFron", vida: 100},
+    { nivel: 1, tipo: "eneFron", vida: 100},
   ];
 
   return puntos;
@@ -241,15 +248,32 @@ export function movimiento() {
   var movimiento = [
     [{ x: 825, y: 892 }, { x: 406, y: 892 }, { x: 825, y: 892 }],  // Ruta del enemigo 
     [{ x: 406, y: 950 }, { x: 825, y: 950 }, { x: 406, y: 950 }], 
-];
+    [{ x: 1300, y: 892 }, { x: 1930, y: 892 }, { x: 1300, y: 892 }],  // Ruta del enemigo 
+    [{ x: 1930, y: 950 }, { x: 1300, y: 950 }, { x: 1930, y: 950 }],
+    [{ x: 1455, y:555}, { x: 1228, y:555}, { x: 1228, y:397}, { x: 1399, y:397}, { x: 1455, y:114}, { x: 1455, y:555}],
+    [{ x: 1384, y:1039}, { x: 1476, y:1039}, { x: 1476, y:1882}, { x: 557, y:1882}, { x: 557, y:1832}, { x: 1383, y:1832}, { x: 1384, y:1039}],
+    [{ x: 1476, y:1882}, { x: 557, y:1882}, { x: 557, y:1832}, { x: 1383, y:1832}, { x: 1384, y:1039}, { x: 1476, y:1039}, { x: 1476, y:1882}],
+    [{ x: 1383, y:1832}, { x: 1384, y:1039}, { x: 1476, y:1039}, { x: 1476, y:1882}, { x: 557, y:1882}, { x: 557, y:1832}, { x: 1383, y:1832}],
+    [{ x: 1992, y: 949}, { x: 2687, y:949}, { x: 2687, y:1367}, { x: 2002, y: 1367}, { x: 1992, y: 930}],
+  ];
 
   return movimiento;
 }
 
-export function Aliados() {
-  var Aliados = [
-    { x: 1400, y: 210, nivel: 4, tipo: "eneFron", vida: 100, tipo: "info" },
+
+export function PuntosA() {
+  var puntosA = [
+    { nivel: 1, tipo: "CamDer", vida: 100},
+    { nivel: 1, tipo: "CamDer", vida: 100},
   ];
 
-  return Aliados;
+  return puntosA;
+}
+
+export function movimientoA() {
+  var movimientoA = [
+    [{ x: 289, y: 746 }, { x: 617, y: 746 }, { x: 289, y: 746 }],  // Ruta del enemigo 
+  ];
+
+  return movimientoA;
 }

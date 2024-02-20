@@ -1,47 +1,72 @@
+body {
+    overflow-x: hidden; /* Evita el desplazamiento horizontal */
+    overflow-y: hidden;
+}
+
 #con_preguntas {
     position: absolute;
     top: 48.5%;
     left: 80%;
     transform: translate(-50%, -50%);
     background-image: url(../img/Recuadro_Preguntas.png);
-    background-size: 94%;
+    background-size: 100%;
     background-position: center;
     background-repeat: no-repeat;
-    padding-left: 5%;
-    padding-right: 5%;
+    padding: 5% 7% 5% 5%;
     justify-content: center;
     align-items: center;
     width: 25%;
-    height: 97%;
+    height: 100%;
     display: none;
-}
-
-.Op_res {
-    background-image: url(../assets/Res_Fondo.png);
-    background-position: center;
-    padding-top: 15%;
-    margin-top: -10%;
-    height: 60px;
-    width: 100%;
-    font-size: 100%;
-    text-align: center;
-    color: #503D00;
-    display: inline-block;
-    cursor: pointer;
-    
+    max-width: 100%;
 }
 
 .Op_pre {
     font-size: 30px;
     color: #503D00;
-    display: inline-block;
+    display: flow-root;
     margin-bottom: 2%;
     width: 100%;
     height: 20%;
     text-align: justify;
+    text-align: center;
     margin-top: 20%;
-    margin-bottom: 20%;
+    margin-bottom: 15%;
     text-shadow: 1px 1px 2px #000;
+    cursor: pointer; /* Agrega un cursor para indicar que es clickeable */
+}
+
+.Op_res {
+    border-radius: 20px;
+    background-position: center;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    align-items: center;
+    justify-content: center;
+    padding: 5% 5% 5% 10%;
+    margin-top: -2%;
+    height: 45px;
+    width: 90%;
+    font-size: 100%;
+    text-align: center;
+    color: #503D00;
+    display: flex;
+    cursor: pointer;
+}
+.Op_res.fondo {
+    background-image: url(../assets/Res_Fondo.png);
+}
+
+.Op_res.seleccion {
+    background-image: url(../assets/Res_FondoS.png); /* Cambia el color de fondo cuando se hace clic */
+}
+
+.Op_res.correcta {
+    background-image: url(../assets/Res_FondoC.png); /* Cambia el color de fondo cuando se hace clic */
+}
+
+.Op_res.incorrecta {
+    background-image: url(../assets/Res_FondoI.png); /* Cambia el color de fondo cuando se hace clic */
 }
 
 #barra-vida {
