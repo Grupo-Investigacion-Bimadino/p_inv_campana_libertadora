@@ -266,7 +266,7 @@ export class Batalla extends Phaser.Scene {
                         Personaje.conocimiento = puntaje;
                     };
                     console.log(punto);
-                    if (punto >= 4) {
+                    if (punto >= 4 & puntaje >= 4) {
                         punto -= 4;
                         PuntoTotal.Puntos = punto;
                     }
