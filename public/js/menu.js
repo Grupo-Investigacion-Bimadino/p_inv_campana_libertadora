@@ -1,7 +1,10 @@
 import { movimiento } from "./preguntas.js";
+import { movimientoA } from "./preguntas.js";
 
 export class MenuScene extends Phaser.Scene {
     rutas = movimiento();
+    rutasA = movimientoA();
+    PuntoTotal = 0;
     constructor() {
         super({ key: "MenuScene" });
     }
@@ -26,6 +29,7 @@ export class MenuScene extends Phaser.Scene {
         this.Bot.play();
         this.Fon = this.sound.add('fondo_Audio');
         this.Fon.play();
+    
 
 
         this.add.image(0, 0, 'fondo_1').setOrigin(0, 0).setScale(0.25);
@@ -67,11 +71,16 @@ export class MenuScene extends Phaser.Scene {
             .on("pointerup", () => {
                 document.body.style.cursor = 'default';
                 localStorage.removeItem('SimonBolivar');
-                localStorage.removeItem('Enemigo');
                 localStorage.removeItem('numEnemigo');
+                localStorage.removeItem('Enemigo');
                 localStorage.removeItem('Rutas');
                 localStorage.removeItem('Aliados');
+                localStorage.removeItem('RutasA');
                 localStorage.setItem("Rutas", JSON.stringify(this.rutas));
+                localStorage.setItem("RutasA", JSON.stringify(this.rutasA));
+                if (!localStorage.getItem("PuntoTotal")) {
+                    localStorage.setItem("PuntoTotal", JSON.stringify({ Puntos: this.PuntoTotal}));
+                }
                 this.Fon.stop();
                 this.scene.start("Conversacion");
             });
@@ -132,5 +141,10 @@ export class MenuScene extends Phaser.Scene {
     }
 
     update() {
+        const keyP = this.input.keyboard.addKey('P');
+        const keyA = this.input.keyboard.addKey('A');
+        if (keyP.isDown & keyA.isDown) {
+            localStorage.removeItem('PuntoTotal');
+        }
     }
 }

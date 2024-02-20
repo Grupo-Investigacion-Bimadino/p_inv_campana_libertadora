@@ -2,6 +2,21 @@
   "name": "p_inv_campana_libertadora",
   "version": "1.0.0",
   "main": "index.js",
+  "window": {
+    "title": "Mi Juego",
+    "icon": "icon.png",
+    "toolbar": true,
+    "frame": true,
+    "width": 800,
+    "height": 600,
+    "min_width": 400,
+    "min_height": 300,
+    "position": "center",
+    "resizable": true,
+    "always-on-top": false,
+    "fullscreen": false
+  },
+  "node-remote": "http://localhost:*",
   "repository": "https://github.com/Grupo-Investigacion-Bimadino/p_inv_campana_libertadora.git",
   "author": "Grupo-Investigacion-Bimadino",
   "license": "MIT",
@@ -14,5 +29,8 @@
     "express": "^4.18.2",
     "nodemon": "^2.0.22",
     "phaser": "^3.55.2"
+  },
+  "devDependencies": {
+    "nw-builder": "^4.4.2-beta.3"
   }
 }
