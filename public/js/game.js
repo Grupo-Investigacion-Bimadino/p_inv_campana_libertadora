@@ -244,7 +244,7 @@ export class Game extends Phaser.Scene {
       const playerX = this.personaje.x;
       const playerY = this.personaje.y;
       // console.log(" X: " + playerX, " Y: " + playerY);
-      const followThreshold = 100; // Seguimiento 150
+      const followThreshold = 99; // Seguimiento 150
       this.quienes = [];
 
       this.aliados.getChildren().forEach((ally) => {
