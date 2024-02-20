@@ -59,7 +59,7 @@ export class gameOver extends Phaser.Scene {
             .setInteractive()
             .on("pointerdown", () => {
                 // Vuelve a la escena del menú principal
-                this.scene.start("MenuScene");
+                // this.scene.start("MenuScene");
             })
             .on('pointerover', function () {
                 document.body.style.cursor = 'pointer';
