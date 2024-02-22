@@ -5,6 +5,7 @@ export class MenuScene extends Phaser.Scene {
     rutas = movimiento();
     rutasA = movimientoA();
     PuntoTotal = 0;
+    EliminarEsto = "Esto no se usa";
     constructor() {
         super({ key: "MenuScene" });
     }
@@ -20,7 +21,6 @@ export class MenuScene extends Phaser.Scene {
         this.load.image("EspadaDer", "./img/Espada_Der.svg");
         this.load.image("EspadaIzq", "./img/Espada_Izq.svg");
         this.load.image("Puente", "./img/Puente.svg");
-
     }
 
     create() {
