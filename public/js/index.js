@@ -1,7 +1,7 @@
 import { Batalla } from "./Batalla.js";
 import { Game } from "./game.js";
 import { MenuScene } from "./menu.js";
-// import { creditos } from "./creditos.js";
+// import { Creditos } from "./creditos.js";
 import { CasaFrancisco } from "./CasaFrancisco.js";
 import { Conversacion } from "./conversacion.js";
 import { UI } from "./UI.js";

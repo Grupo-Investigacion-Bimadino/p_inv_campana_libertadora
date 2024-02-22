@@ -225,7 +225,7 @@ export class Batalla extends Phaser.Scene {
 
                     PreCor += 1;
                     numPre += 1
-                    VidaE -= 25;
+                    VidaE -= 15;
                     const porcentajeVidaE = (VidaE / vidaMaxima) * 100;
                     const nuevaLongitud = (porcentajeVidaE / 100) * AltoMaximo;
                     barraColor.clear(); // Limpiar la barra de color
