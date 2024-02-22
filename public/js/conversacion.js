@@ -7,8 +7,6 @@ export class Conversacion extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('carta', './img/Inicio/carta.png');
-
         this.load.audio('intro1', './assets/Audios/intro1.mp3');
     }
 
