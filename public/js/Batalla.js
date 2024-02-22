@@ -164,18 +164,29 @@ export class Batalla extends Phaser.Scene {
 
                 respuestasMezcladas.forEach((respuesta, index) => {
                     const opcion = document.createElement("a");
-                    opcion.classList.add("Op_res"); //AGREGAR ESTILOS
-                    opcion.classList.remove("correcta");
-                    opcion.classList.remove("incorrecta");
-                    opcion.classList.remove("selecion");
+                    opcion.classList.add("Op_res");
                     opcion.classList.add("fondo");
                     opcion.textContent = respuesta;
                     opcion.addEventListener("click", function () {
-                        respuestaSeleccionada = respuesta;
-                        self.time.delayedCall(3000, validarRespuesta, [], self);
+                        if (!this.classList.contains('seleccion')) {
+                            // Deseleccionar todas las opciones
+                            document.querySelectorAll('.Op_res').forEach(opcion => {
+                                opcion.classList.remove('seleccion');
+                                opcion.classList.add('fondo');
+                                opcion.style.pointerEvents = 'none'; // Desactivar la interactividad de todas las opciones
+                            });
+                            
+                            // Seleccionar la opción clicada
+                            respuestaSeleccionada = respuesta;
+                            this.classList.add('seleccion');
+                            this.classList.remove('fondo');
+                            this.style.pointerEvents = 'auto'; // Reactivar la interactividad de la opción seleccionada
+                            self.time.delayedCall(3000, validarRespuesta, [], self);
+                        }
                     });
                     div.appendChild(opcion);
                 });
+            
 
                 document.querySelectorAll('.Op_res').forEach(function (opcion) {
                     opcion.addEventListener('click', function () {
@@ -253,7 +264,7 @@ export class Batalla extends Phaser.Scene {
                     });
 
                     numPre += 1;
-                    VidaP -= 25;
+                    VidaP -= 10;
 
                     const porcentajeVida = (VidaP / vidaMaxima) * 100;
                     const nuevaLongitudPer = (porcentajeVida / 100) * AltoMaximo;
@@ -261,15 +272,13 @@ export class Batalla extends Phaser.Scene {
                     barraColorPer.fillStyle(0xff0000); // Establecer el color de la barra
                     barraColorPer.fillRect(0, 0, nuevaLongitudPer, 20);
                     Disparo.play();
-                    if (puntaje >= 4) {
+                    if (puntaje >= 4 && punto >= 4) {
                         puntaje -= 4;
-                        Personaje.conocimiento = puntaje;
-                    };
-                    console.log(punto);
-                    if (punto >= 4 & puntaje >= 4) {
                         punto -= 4;
+                        Personaje.conocimiento = puntaje;
                         PuntoTotal.Puntos = punto;
-                    }
+
+                    };
                     localStorage.setItem("PuntoTotal", JSON.stringify(PuntoTotal));
                     localStorage.setItem("SimonBolivar", JSON.stringify(Personaje));
                     if (VidaP < 1) {

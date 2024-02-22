@@ -41,7 +41,6 @@ export class gameOver extends Phaser.Scene {
             .setInteractive()
             .on("pointerdown", () => {
                 // Reinicia el juego o vuelve a la escena de juego
-                this.scene.start("Game");
             })
             .on('pointerover', function () {
                 document.body.style.cursor = 'pointer';
