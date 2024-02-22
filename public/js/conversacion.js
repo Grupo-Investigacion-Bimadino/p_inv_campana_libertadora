@@ -33,7 +33,7 @@ export class Conversacion extends Phaser.Scene {
             'que probarán tu liderazgo, astucia y conocimiento histórico.\n'+
             '\n'+
             '                                                Enter para continuar',
-            "Texto 2: Este es el segundo texto.",
+            // "Texto 2: Este es el segundo texto.",
         ];
 
         this.startText = this.add.text(650, 300, "", {

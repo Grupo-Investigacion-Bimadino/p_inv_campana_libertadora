@@ -12,14 +12,14 @@ export class MenuScene extends Phaser.Scene {
     preload() {
         this.load.audio('boton_Audio', './assets/Audios/Son_Boton_Bat.mp3');
         this.load.audio('fondo_Audio', './assets/Audios/Fondo_Sound.wav');
-        this.load.image("fondo_1", "./img/Fondo_Menu.png");
-        this.load.image("NewPar", "./img/NuevaPartida.png");
-        this.load.image("TituloMenu", "./img/Titulo_Menu.png");
-        this.load.image("Opciones", "./img/Opciones.png");
-        this.load.image("Creditos", "./img/Creditos.png");
-        this.load.image("EspadaDer", "./img/Espada_Der.png");
-        this.load.image("EspadaIzq", "./img/Espada_Izq.png");
-        this.load.image("Puente", "./img/Puente.png");
+        this.load.image("fondo_1", "./img/Fondo_Menu.svg");
+        this.load.image("NewPar", "./img/NuevaPartida.svg");
+        this.load.image("TituloMenu", "./img/Titulo_Menu.svg");
+        this.load.image("Opciones", "./img/Opciones.svg");
+        this.load.image("Creditos", "./img/Creditos.svg");
+        this.load.image("EspadaDer", "./img/Espada_Der.svg");
+        this.load.image("EspadaIzq", "./img/Espada_Izq.svg");
+        this.load.image("Puente", "./img/Puente.svg");
 
     }
 
@@ -29,7 +29,8 @@ export class MenuScene extends Phaser.Scene {
         this.Bot.play();
         this.Fon = this.sound.add('fondo_Audio');
         this.Fon.play();
-    
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
 
 
         this.add.image(0, 0, 'fondo_1').setOrigin(0, 0).setScale(0.25);
@@ -79,7 +80,7 @@ export class MenuScene extends Phaser.Scene {
                 localStorage.setItem("Rutas", JSON.stringify(this.rutas));
                 localStorage.setItem("RutasA", JSON.stringify(this.rutasA));
                 if (!localStorage.getItem("PuntoTotal")) {
-                    localStorage.setItem("PuntoTotal", JSON.stringify({ Puntos: this.PuntoTotal}));
+                    localStorage.setItem("PuntoTotal", JSON.stringify({ Puntos: this.PuntoTotal }));
                 }
                 this.Fon.stop();
                 this.scene.start("Conversacion");
@@ -138,13 +139,37 @@ export class MenuScene extends Phaser.Scene {
             delay: 400,
         });
 
+                
+        if (localStorage.getItem('PuntoTotal')) {
+            const score = JSON.parse(localStorage.getItem('PuntoTotal')).Puntos;
+            const scoreText = this.add.text(
+                10,
+                10,
+                `Puntos Total: ${score}`,
+                {
+                    fontSize: "24px", 
+                    fill: "#ffffff",
+                    align: "left",
+                    backgroundColor: "#000000",
+                    padding: { 
+                        left: 10,
+                        right: 10,
+                        top: 5,
+                        bottom: 5
+                    },
+                }
+            );
+            scoreText.setOrigin(0);
+            scoreText.depth = 4;
+        }
+
     }
 
     update() {
         const keyP = this.input.keyboard.addKey('P');
         const keyA = this.input.keyboard.addKey('A');
         if (keyP.isDown & keyA.isDown) {
-            localStorage.removeItem('PuntoTotal');
+            localStorage.setItem("PuntoTotal", JSON.stringify({ Puntos: 0 }));
         }
     }
 }

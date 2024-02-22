@@ -24,6 +24,7 @@ export class Game extends Phaser.Scene {
     this.Inicio = 0;
     this.Col = 0;
     this.numEnemigo = "";
+    this.jugador;
   }
 
   preload() {
@@ -92,6 +93,7 @@ export class Game extends Phaser.Scene {
     if (!localStorage.getItem("RutasA")) {
       localStorage.setItem("RutasA", JSON.stringify(this.routesA));
     }
+    
 
     this.sound.stopAll();
     this.fondo = this.sound.add('Audio_Fon');
