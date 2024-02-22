@@ -38,7 +38,7 @@ export class Game extends Phaser.Scene {
     this.load.tilemapCSV("a_TierraDetalles", "./data/a_TierraDetalle.csv");
 
     this.load.image("Tile", "./data/TileGeneral.png");
-    this.load.image("fondo", "./img/fondoBatalla.png");
+    this.load.image("fondo", "./img/fondoBatalla.svg");
     this.load.image('esclavo', './img/SimonBolivar/back-Sheet-batalla.png');
     this.load.image('soldado', './img/enemigoEspañol/front-Sheet-batalla.png');
     this.load.image('colicionador', './img/Colicionador.png');
