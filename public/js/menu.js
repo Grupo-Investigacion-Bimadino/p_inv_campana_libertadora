@@ -5,7 +5,7 @@ export class MenuScene extends Phaser.Scene {
     rutas = movimiento();
     rutasA = movimientoA();
     PuntoTotal = 0;
-    EliminarEsto = "Esto no se usa";
+    EliminarEsto = "Esto no";
     constructor() {
         super({ key: "MenuScene" });
     }
